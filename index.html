@@ -16,7 +16,7 @@
         --fg: #eaeaea;
         --fg-dim:#b9b9b9;
         --bg: #0b0b0f;
-        --acc: #8ad6ff;
+        --acc: #ffffff;
       }
       html,body{height:100%}
       body{
@@ -40,13 +40,8 @@
         padding:2rem; text-align:center;
       }
 
-      .brand{display:grid; place-items:center; position:relative; margin-bottom:1rem; width:200px; height:200px;}
-      .brand img{
-        width:200px; height:auto; position:absolute; inset:0; margin:auto; transition:opacity .3s ease;
-      }
-      .brand img.black{opacity:0;}
-      .brand:hover img.white{opacity:0;}
-      .brand:hover img.black{opacity:1;}
+      .brand{display:grid; place-items:center; margin-bottom:1rem;}
+      .brand img{width:200px; height:auto; display:block; margin:0 auto;}
 
       .title{font-size: clamp(28px,5vw,46px); font-weight:700; margin:.5rem 0 1rem}
       .sub{color:var(--fg-dim); max-width:60ch; margin:0 auto 1.2rem}
@@ -58,8 +53,8 @@
         color:var(--fg); text-decoration:none; font-weight:600;
         transition: transform .2s ease;
       }
-      .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.28); box-shadow:0 0 30px rgba(138,214,255,.25)}
-      .btn.primary{ border-color: rgba(138,214,255,.5); }
+      .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.28); box-shadow:0 0 30px rgba(255,255,255,.25)}
+      .btn.primary{ border-color: rgba(255,255,255,.5); }
 
       @keyframes idle-wobble{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-2px) rotate(-.6deg)}}
 
@@ -76,8 +71,7 @@
     <main class="wrap">
       <section class="card">
         <div class="brand">
-          <img class="white" src="assets/TillBlack_Logo_white.png" alt="TillBlack logo white" />
-          <img class="black" src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
+          <img src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
         </div>
         <h1 class="title">Atmosphere first.</h1>
         <p class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
@@ -107,9 +101,9 @@
         camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 
         const vertex = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position,1.0);} `;
-        const fragment = `precision highp float; varying vec2 vUv; uniform float uTime; uniform vec2 uResolution; uniform vec3 uAccent; vec2 hash(vec2 p){ p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3))); return -1.0 + 2.0*fract(sin(p)*43758.5453123);} float noise(in vec2 p){const float K1 = 0.366025404; const float K2 = 0.211324865; vec2 i = floor(p + (p.x+p.y)*K1); vec2 a = p - i + (i.x+i.y)*K2; vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0); vec2 b = a - o + K2; vec2 c = a - 1.0 + 2.0*K2; vec3 h = max(0.5 - vec3(dot(a,a), dot(b,b), dot(c,c)), 0.0); vec3 n = h*h*h*h*vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0))); return dot(n, vec3(70.0)); } void main(){ vec2 uv = vUv; vec2 p = (uv - 0.5) * vec2(uResolution.x/uResolution.y, 1.0); float t = uTime*0.08; float n = noise(p*1.8 + vec2(t*0.7, -t*0.5)); float m = noise(p*3.2 - vec2(t*0.4, t*0.6)); float nebula = smoothstep(-0.45, 0.8, n + m*0.6); float grid = (sin((uv.x+t*0.05)*80.0)*sin((uv.y-t*0.04)*80.0))*0.03; float vign = smoothstep(0.95, 0.35, length(uv-0.5)); vec3 base = mix(vec3(0.02,0.03,0.06), vec3(0.06,0.09,0.12), nebula); vec3 glow = uAccent * (nebula*0.18 + grid*0.5); vec3 col = base + glow; col *= vign; gl_FragColor = vec4(col, 1.0);} `;
+        const fragment = `precision highp float; varying vec2 vUv; uniform float uTime; uniform vec2 uResolution; uniform vec3 uAccent; vec2 hash(vec2 p){ p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3))); return -1.0 + 2.0*fract(sin(p)*43758.5453123);} float noise(in vec2 p){const float K1 = 0.366025404; const float K2 = 0.211324865; vec2 i = floor(p + (p.x+p.y)*K1); vec2 a = p - i + (i.x+i.y)*K2; vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0); vec2 b = a - o + K2; vec2 c = a - 1.0 + 2.0*K2; vec3 h = max(0.5 - vec3(dot(a,a), dot(b,b), dot(c,c)), 0.0); vec3 n = h*h*h*h*vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0))); return dot(n, vec3(70.0)); } void main(){ vec2 uv = vUv; vec2 p = (uv - 0.5) * vec2(uResolution.x/uResolution.y, 1.0); float t = uTime*0.08; float n = noise(p*1.8 + vec2(t*0.7, -t*0.5)); float m = noise(p*3.2 - vec2(t*0.4, t*0.6)); float nebula = smoothstep(-0.45, 0.8, n + m*0.6); float grid = (sin((uv.x+t*0.05)*80.0)*sin((uv.y-t*0.04)*80.0))*0.03; float vign = smoothstep(0.95, 0.35, length(uv-0.5)); vec3 base = mix(vec3(0.02,0.02,0.02), vec3(0.9), nebula); vec3 col = mix(base, vec3(1.0), nebula*0.3); col *= vign; gl_FragColor = vec4(col, 1.0);} `;
 
-        uniforms = { uTime: { value: 0 }, uResolution: { value: new THREE.Vector2() }, uAccent: { value: new THREE.Color(0x8ad6ff).toArray() } };
+        uniforms = { uTime: { value: 0 }, uResolution: { value: new THREE.Vector2() }, uAccent: { value: new THREE.Color(0xffffff).toArray() } };
         const geo = new THREE.PlaneGeometry(2,2);
         const mat = new THREE.ShaderMaterial({uniforms, vertexShader: vertex, fragmentShader: fragment, depthTest:false, depthWrite:false});
         mesh = new THREE.Mesh(geo, mat);
@@ -121,25 +115,6 @@
       function onResize(){ const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); uniforms.uResolution.value.set(w, h);} 
       function animate(t){ uniforms.uTime.value = (t||0)*0.001; renderer.render(scene, camera); requestAnimationFrame(animate);} 
       try{init();}catch(e){canvas.style.display='none'; console.warn('WebGL disabled:', e);} 
-    </script>
-    <script>
-      // Logo micro-glitch pulse (random every 6–10s)
-      (function(){
-        const pulseTargets = document.querySelectorAll('.brand');
-        if(!pulseTargets.length) return;
-        let timer;
-        function pulse(){
-          pulseTargets.forEach(el=>{
-            const dx = (Math.random()*2-1) * 1.2;
-            const dy = (Math.random()*2-1) * 1.2;
-            const r  = (Math.random()*2-1) * 0.6;
-            el.style.transform = `translate(${dx}px, ${dy}px) rotate(${r}deg)`;
-          });
-          setTimeout(()=>{ pulseTargets.forEach(el=>{ el.style.transform=''; }); schedule(); }, 160);
-        }
-        function schedule(){ timer = setTimeout(pulse, 6000 + Math.random()*4000); }
-        schedule();
-      })();
     </script>
   </body>
 </html>

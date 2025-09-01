@@ -21,7 +21,7 @@
       body{
         margin:0; background:var(--bg); color:var(--fg);
         font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
-        line-height:1.5; overflow:hidden;
+        line-height:1.5; overflow:auto; -webkit-overflow-scrolling: touch;
       }
 
       #bg{position:fixed; inset:0; z-index:0;}
@@ -30,7 +30,7 @@
       .fade-bottom{bottom:0; height:35vh; background:linear-gradient(transparent,var(--bg))}
 
       /* === LAYOUT: content higher on the page === */
-      .wrap{position:relative; z-index:2; height:100%; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
+      .wrap{position:relative; z-index:2; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
       .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; }
 
       /* Logo */
@@ -40,7 +40,7 @@
 
       /* Text & buttons use difference blend for BW bg */
       .title, .sub, .cta .btn{ mix-blend-mode: difference; }
-      .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .3rem}
+      .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .6rem}
       .sub{color:var(--fg-dim); max-width:64ch; margin:0 auto 1rem}
 
       .cta{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin-top:1rem}

@@ -26,20 +26,18 @@
 
       #bg{position:fixed; inset:0; z-index:0;}
       .fade-top,.fade-bottom{display:none}
-      .fade-top{top:0; height:25vh; background:linear-gradient(var(--bg),transparent)}
-      .fade-bottom{bottom:0; height:35vh; background:linear-gradient(transparent,var(--bg))}
 
-      /* === LAYOUT: content higher on the page === */
+      /* === LAYOUT === */
       .wrap{position:relative; z-index:2; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
-      .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; }
+      .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; }
 
       /* Logo */
-      .brand{display:grid; place-items:center; margin-bottom:.6rem}
+      .brand{display:grid; place-items:center; margin-top:2rem}
       .brand .logo{ display:block; width:clamp(220px, 32vw, 420px); height:auto; margin:0 auto; filter: drop-shadow(0 0 10px rgba(255,255,255,.12)); animation: pulse-glow 4s ease-in-out infinite alternate; will-change: filter, transform; }
       .brand:hover .logo{ animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1; }
 
       /* Text & buttons use difference blend for BW bg */
-      .title, .sub, .cta .btn{ /* deprecated individual blend: replaced by .blend wrapper */ }
+      .blend, .blend *{ mix-blend-mode:difference; }
       .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .6rem}
       .sub{color:var(--fg-dim); max-width:64ch; margin:0 auto 1rem}
 
@@ -57,37 +55,27 @@
       .steam-widget{margin-top:1.6rem; display:flex; justify-content:center}
 
       footer{position:fixed; bottom:0; left:0; right:0; z-index:2; text-align:center; padding:1rem; color:#bcbcbc; font-size:13px; mix-blend-mode:difference}
-
-      /* Small screens: a bit more top padding */
-      @media (max-width:520px){ .wrap{ padding-top:10vh } }
-    </style>
-    <style>
-      /* Blend wrapper so text & buttons truly difference-blend with backdrop */
-      .blend{ position:relative; }
-      .blend, .blend *{ mix-blend-mode:difference; }
     </style>
   </head>
   <body>
     <canvas id="bg" aria-hidden="true"></canvas>
-    <!-- fades disabled so blend works directly on WebGL backdrop -->
 
     <main class="wrap">
       <section class="card">
-        <div class="brand">
-          $1
-        </div>
         <div class="blend">
-
-        <h1 class="title">Atmosphere first.</h1>
-        <p class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
-        <div class="cta">
-          <a class="btn" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/">→ View on Steam</a>
-          <a class="btn" href="mailto:hello@tillblack.com">Contact</a>
-          <a class="btn" href="#about">About</a>
-        </div>
+          <h1 class="title">Atmosphere first.</h1>
+          <p class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
+          <div class="cta">
+            <a class="btn" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/">→ View on Steam</a>
+            <a class="btn" href="mailto:hello@tillblack.com">Contact</a>
+            <a class="btn" href="#about">About</a>
+          </div>
         </div>
         <div class="steam-widget">
           <iframe src="https://store.steampowered.com/widget/3424800/" frameborder="0" width="646" height="190"></iframe>
+        </div>
+        <div class="brand">
+          <img class="logo" src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
         </div>
       </section>
     </main>
@@ -107,7 +95,6 @@
         camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 
         const vertex = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position,1.0);} `;
-        /* Black & white reactive background */
         const fragment = `
           precision highp float; varying vec2 vUv; uniform float uTime; uniform vec2 uResolution;
           vec2 hash(vec2 p){ p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3))); return -1.0 + 2.0*fract(sin(p)*43758.5453123);} 

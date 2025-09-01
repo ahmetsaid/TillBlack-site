@@ -26,63 +26,40 @@
 
       #bg{position:fixed; inset:0; z-index:0;}
       .fade-top,.fade-bottom{position:fixed; left:0; right:0; z-index:1; pointer-events:none}
-      .fade-top{top:0; height:35vh; background:linear-gradient(var(--bg),transparent)}
+      .fade-top{top:0; height:25vh; background:linear-gradient(var(--bg),transparent)}
       .fade-bottom{bottom:0; height:35vh; background:linear-gradient(transparent,var(--bg))}
 
-      .wrap{position:relative; z-index:2; height:100%; display:grid; place-items:center; padding:2rem}
-      .card{
-        width:min(1000px,94vw);
-        border-radius:1.4rem;
-        background:transparent; /* allow blend to hit the WebGL backdrop */
-        padding:2rem; text-align:center;
-      }
+      /* === LAYOUT: content higher on the page === */
+      .wrap{position:relative; z-index:2; height:100%; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
+      .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; }
 
-      /* Logo area */
-      .brand{display:grid; place-items:center; margin-bottom:1.2rem}
-      .brand .logo{
-        display:block;
-        width:clamp(260px, 42vw, 520px); /* bigger logo */
-        height:auto; margin:0 auto;
-        filter: drop-shadow(0 0 10px rgba(255,255,255,.12));
-        animation: pulse-glow 4s ease-in-out infinite alternate; /* subtle glow */
-        will-change: filter, transform;
-      }
-      .brand:hover .logo{ animation: pulse-glow 1.6s ease-in-out infinite alternate, hover-shake .45s ease-in-out 1; }
+      /* Logo */
+      .brand{display:grid; place-items:center; margin-bottom:.6rem}
+      .brand .logo{ display:block; width:clamp(220px, 32vw, 420px); height:auto; margin:0 auto; filter: drop-shadow(0 0 10px rgba(255,255,255,.12)); animation: pulse-glow 4s ease-in-out infinite alternate; will-change: filter, transform; }
+      .brand:hover .logo{ animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1; }
 
-      /* Text & buttons blend using difference for high-contrast over BW bg */
+      /* Text & buttons use difference blend for BW bg */
       .title, .sub, .cta .btn{ mix-blend-mode: difference; }
+      .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .6rem}
+      .sub{color:var(--fg-dim); max-width:64ch; margin:0 auto 1rem}
 
-      .title{font-size: clamp(34px,6vw,64px); font-weight:800; margin:.4rem 0 1rem; letter-spacing:.01em}
-      .sub{color:var(--fg-dim); max-width:64ch; margin:0 auto 1.3rem}
-
-      .cta{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin-top:1.2rem}
-      .btn{
-        padding:1rem 1.25rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18);
-        background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
-        color:var(--fg); text-decoration:none; font-weight:700;
-        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-      }
+      .cta{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin-top:1rem}
+      .btn{ padding:.9rem 1.15rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); color:var(--fg); text-decoration:none; font-weight:700; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
       .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 34px rgba(255,255,255,.15)}
 
       /* Animations */
-      @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 8px rgba(255,255,255,.08)); } to{ filter: drop-shadow(0 0 28px rgba(255,255,255,.35)); } }
-      @keyframes hover-shake{
-        0%{ transform: translate(0,0) rotate(0) }
-        20%{ transform: translate(1px,-1px) rotate(.2deg) }
-        40%{ transform: translate(-1px,1px) rotate(-.2deg) }
-        60%{ transform: translate(1px,0) rotate(.15deg) }
-        80%{ transform: translate(0,-1px) rotate(-.15deg) }
-        100%{ transform: translate(0,0) rotate(0) }
-      }
+      @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 8px rgba(255,255,255,.08)); } to{ filter: drop-shadow(0 0 22px rgba(255,255,255,.28)); } }
+      @keyframes hover-shake{ 0%{ transform: translate(0,0) rotate(0) } 20%{ transform: translate(1px,-1px) rotate(.2deg) } 40%{ transform: translate(-1px,1px) rotate(-.2deg) } 60%{ transform: translate(1px,0) rotate(.15deg) } 80%{ transform: translate(0,-1px) rotate(-.15deg) } 100%{ transform: translate(0,0) rotate(0) } }
 
       /* Respect reduced motion */
-      @media (prefers-reduced-motion: reduce){
-        .brand .logo{ animation:none }
-      }
+      @media (prefers-reduced-motion: reduce){ .brand .logo{ animation:none } }
 
-      .steam-widget{margin-top:2.2rem; display:flex; justify-content:center}
+      .steam-widget{margin-top:1.6rem; display:flex; justify-content:center}
 
       footer{position:fixed; bottom:0; left:0; right:0; z-index:2; text-align:center; padding:1rem; color:#bcbcbc; font-size:13px; mix-blend-mode:difference}
+
+      /* Small screens: a bit more top padding */
+      @media (max-width:520px){ .wrap{ padding-top:10vh } }
     </style>
   </head>
   <body>
@@ -126,7 +103,6 @@
         /* Black & white reactive background */
         const fragment = `
           precision highp float; varying vec2 vUv; uniform float uTime; uniform vec2 uResolution;
-          // noise helpers
           vec2 hash(vec2 p){ p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3))); return -1.0 + 2.0*fract(sin(p)*43758.5453123);} 
           float noise(in vec2 p){
             const float K1 = 0.366025404; const float K2 = 0.211324865; 
@@ -145,10 +121,9 @@
             float n = noise(p*1.8 + vec2(t*0.7, -t*0.5));
             float m = noise(p*3.2 - vec2(t*0.4, t*0.6));
             float field = smoothstep(-0.45, 0.8, n + m*0.6);
-            // monochrome bands + vignette
             float vign = smoothstep(0.96, 0.3, length(uv-0.5));
-            float grid = (sin((uv.x+t*0.05)*80.0)*sin((uv.y-t*0.04)*80.0))*0.08;
-            float bw = clamp(field*0.85 + grid*0.25, 0.0, 1.0);
+            float grid = (sin((uv.x+t*0.05)*80.0)*sin((uv.y-t*0.04)*80.0))*0.06;
+            float bw = clamp(field*0.75 + grid*0.22, 0.0, 1.0);
             vec3 col = mix(vec3(0.03), vec3(0.98), bw) * vign;
             gl_FragColor = vec4(col, 1.0);
           }

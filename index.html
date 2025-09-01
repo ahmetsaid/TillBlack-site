@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TillBlack — Studio</title>
+    <title>TillBlack — Studio v2</title>
     <meta name="description" content="TillBlack is a small studio crafting moody, atmospheric experiences — including Code of Shadows." />
 
     <!-- Social cards -->
@@ -28,7 +28,7 @@
       .fade-top,.fade-bottom{display:none}
 
       /* === LAYOUT === */
-      .wrap{position:relative; z-index:2; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
+      .wrap{position:relative; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
       .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; }
 
       /* Logo */
@@ -37,7 +37,7 @@
       .brand:hover .logo{ animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1; }
 
       /* Text & buttons use difference blend for BW bg */
-      .blend{ position:relative; z-index:3; }
+      .blend{ position:relative; }
       .blend *{ mix-blend-mode:difference; color:white; }
 
       .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .6rem}
@@ -56,7 +56,7 @@
 
       .steam-widget{margin-top:1.6rem; display:flex; justify-content:center}
 
-      footer{position:fixed; bottom:0; left:0; right:0; z-index:2; text-align:center; padding:1rem; font-size:13px;}
+      footer{position:fixed; bottom:0; left:0; right:0; text-align:center; padding:1rem; font-size:13px; mix-blend-mode:difference; color:white;}
       footer span{ mix-blend-mode:difference; color:white; }
     </style>
   </head>

@@ -64,6 +64,8 @@
       .brand:hover .logo{ animation: hover-wobble 1.5s ease-in-out infinite }
       @keyframes hover-wobble{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(0,-2px) rotate(.4deg)}50%{transform:translate(0,1px) rotate(-.4deg)}75%{transform:translate(0,-1px) rotate(.2deg)}100%{transform:translate(0,0) rotate(0)}}
 
+      .steam-widget{margin-top:2rem; display:flex; justify-content:center}
+
       footer{position:fixed; bottom:0; left:0; right:0; z-index:2; text-align:center; padding:1rem; color:var(--fg-dim); font-size:13px}
     </style>
     <!-- Overrides for logo size + glow + micro-glitch -->
@@ -71,7 +73,6 @@
       .logo{ width:180px; height:auto; filter: drop-shadow(0 0 10px rgba(138,214,255,.28)); animation: idle-wobble 6s ease-in-out infinite alternate, soft-glow 4s ease-in-out infinite alternate; }
       .brand:hover .logo{ animation: hover-wobble 1.4s ease-in-out infinite, soft-glow 1.8s ease-in-out infinite }
       @keyframes soft-glow{ from{ filter: drop-shadow(0 0 10px rgba(138,214,255,.25)) } to{ filter: drop-shadow(0 0 22px rgba(138,214,255,.45)) } }
-      /* a11y: keep the text label for screen readers only */
       .name{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0 }
     </style>
   </head>
@@ -83,7 +84,7 @@
     <main class="wrap">
       <section class="card">
         <div class="brand">
-          <img class="logo" src="assets/TillBlackSquare.png" alt="TillBlack logo" />
+          <img class="logo" src="/assets/TillBlack.png" alt="TillBlack logo" />
         </div>
         <h1 class="title">Atmosphere first.</h1>
         <p class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
@@ -91,6 +92,9 @@
           <a class="btn primary" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/">→ View on Steam</a>
           <a class="btn" href="mailto:hello@tillblack.com">Contact</a>
           <a class="btn" href="#about">About</a>
+        </div>
+        <div class="steam-widget">
+          <iframe src="https://store.steampowered.com/widget/3424800/" frameborder="0" width="646" height="190"></iframe>
         </div>
       </section>
     </main>

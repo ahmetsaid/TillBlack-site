@@ -40,12 +40,14 @@
         padding:2rem; text-align:center;
       }
 
-      .brand{display:flex; align-items:center; justify-content:center; margin-bottom:1rem}
+      .brand{display:flex; align-items:center; justify-content:center; margin-bottom:1rem; position:relative}
       .logo{
         width:200px; height:auto;
         filter: drop-shadow(0 0 15px rgba(138,214,255,.4));
         animation: idle-wobble 6s ease-in-out infinite alternate;
+        transition: opacity .3s ease;
       }
+      .logo.hover{opacity:0; position:absolute; top:0; left:50%; transform:translateX(-50%);}
 
       .title{font-size: clamp(28px,5vw,46px); font-weight:700; margin:.5rem 0 1rem}
       .sub{color:var(--fg-dim); max-width:60ch; margin:0 auto 1.2rem}
@@ -61,19 +63,12 @@
       .btn.primary{ border-color: rgba(138,214,255,.5); }
 
       @keyframes idle-wobble{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-2px) rotate(-.6deg)}}
-      .brand:hover .logo{ animation: hover-wobble 1.5s ease-in-out infinite }
-      @keyframes hover-wobble{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(0,-2px) rotate(.4deg)}50%{transform:translate(0,1px) rotate(-.4deg)}75%{transform:translate(0,-1px) rotate(.2deg)}100%{transform:translate(0,0) rotate(0)}}
+      .brand:hover .logo.default{opacity:0}
+      .brand:hover .logo.hover{opacity:1}
 
       .steam-widget{margin-top:2rem; display:flex; justify-content:center}
 
       footer{position:fixed; bottom:0; left:0; right:0; z-index:2; text-align:center; padding:1rem; color:var(--fg-dim); font-size:13px}
-    </style>
-    <!-- Overrides for logo size + glow + micro-glitch -->
-    <style>
-      .logo{ width:180px; height:auto; filter: drop-shadow(0 0 10px rgba(138,214,255,.28)); animation: idle-wobble 6s ease-in-out infinite alternate, soft-glow 4s ease-in-out infinite alternate; }
-      .brand:hover .logo{ animation: hover-wobble 1.4s ease-in-out infinite, soft-glow 1.8s ease-in-out infinite }
-      @keyframes soft-glow{ from{ filter: drop-shadow(0 0 10px rgba(138,214,255,.25)) } to{ filter: drop-shadow(0 0 22px rgba(138,214,255,.45)) } }
-      .name{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0 }
     </style>
   </head>
   <body>
@@ -84,7 +79,8 @@
     <main class="wrap">
       <section class="card">
         <div class="brand">
-          <img class="logo" src="/assets/TillBlack.png" alt="TillBlack logo" />
+          <img class="logo default" src="/assets/TillBlack_Logo_white.png" alt="TillBlack logo white" />
+          <img class="logo hover" src="/assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
         </div>
         <h1 class="title">Atmosphere first.</h1>
         <p class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
@@ -132,16 +128,18 @@
     <script>
       // Logo micro-glitch pulse (random every 6–10s)
       (function(){
-        const logoEl = document.querySelector('.logo');
-        if(!logoEl) return;
+        const logoEls = document.querySelectorAll('.logo');
+        if(!logoEls.length) return;
         let timer;
         function pulse(){
-          const dx = (Math.random()*2-1) * 1.2;
-          const dy = (Math.random()*2-1) * 1.2;
-          const r  = (Math.random()*2-1) * 0.6;
-          logoEl.style.transform = `translate(${dx}px, ${dy}px) rotate(${r}deg)`;
-          logoEl.style.filter = 'drop-shadow(0 0 26px rgba(138,214,255,.55))';
-          setTimeout(()=>{ logoEl.style.transform=''; logoEl.style.filter=''; schedule(); }, 160);
+          logoEls.forEach(logoEl=>{
+            const dx = (Math.random()*2-1) * 1.2;
+            const dy = (Math.random()*2-1) * 1.2;
+            const r  = (Math.random()*2-1) * 0.6;
+            logoEl.style.transform = `translate(${dx}px, ${dy}px) rotate(${r}deg)`;
+            logoEl.style.filter = 'drop-shadow(0 0 26px rgba(138,214,255,.55))';
+          });
+          setTimeout(()=>{ logoEls.forEach(logoEl=>{logoEl.style.transform=''; logoEl.style.filter='';}); schedule(); }, 160);
         }
         function schedule(){ timer = setTimeout(pulse, 6000 + Math.random()*4000); }
         schedule();

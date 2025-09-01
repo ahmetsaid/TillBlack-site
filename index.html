@@ -13,10 +13,9 @@
 
     <style>
       :root{
-        --fg: #eaeaea;
-        --fg-dim:#b9b9b9;
+        --fg: #ffffff;
+        --fg-dim:#cfcfcf;
         --bg: #0b0b0f;
-        --acc: #ffffff;
       }
       html,body{height:100%}
       body{
@@ -32,35 +31,58 @@
 
       .wrap{position:relative; z-index:2; height:100%; display:grid; place-items:center; padding:2rem}
       .card{
-        width:min(860px,92vw);
+        width:min(1000px,94vw);
         border-radius:1.4rem;
-        background:rgba(8,8,12,.45);
-        box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
-        backdrop-filter: blur(8px);
+        background:transparent; /* allow blend to hit the WebGL backdrop */
         padding:2rem; text-align:center;
       }
 
-      .brand{display:grid; place-items:center; margin-bottom:1rem;}
-      .brand img{width:200px; height:auto; display:block; margin:0 auto;}
+      /* Logo area */
+      .brand{display:grid; place-items:center; margin-bottom:1.2rem}
+      .brand .logo{
+        display:block;
+        width:clamp(260px, 42vw, 520px); /* bigger logo */
+        height:auto; margin:0 auto;
+        filter: drop-shadow(0 0 10px rgba(255,255,255,.12));
+        animation: pulse-glow 4s ease-in-out infinite alternate; /* subtle glow */
+        will-change: filter, transform;
+      }
+      .brand:hover .logo{ animation: pulse-glow 1.6s ease-in-out infinite alternate, hover-shake .45s ease-in-out 1; }
 
-      .title{font-size: clamp(28px,5vw,46px); font-weight:700; margin:.5rem 0 1rem}
-      .sub{color:var(--fg-dim); max-width:60ch; margin:0 auto 1.2rem}
+      /* Text & buttons blend using difference for high-contrast over BW bg */
+      .title, .sub, .cta .btn{ mix-blend-mode: difference; }
+
+      .title{font-size: clamp(34px,6vw,64px); font-weight:800; margin:.4rem 0 1rem; letter-spacing:.01em}
+      .sub{color:var(--fg-dim); max-width:64ch; margin:0 auto 1.3rem}
 
       .cta{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin-top:1.2rem}
       .btn{
-        padding:.9rem 1.15rem; border-radius:.9rem; border:1px solid rgba(255,255,255,.14);
-        background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-        color:var(--fg); text-decoration:none; font-weight:600;
-        transition: transform .2s ease;
+        padding:1rem 1.25rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18);
+        background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+        color:var(--fg); text-decoration:none; font-weight:700;
+        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
       }
-      .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.28); box-shadow:0 0 30px rgba(255,255,255,.25)}
-      .btn.primary{ border-color: rgba(255,255,255,.5); }
+      .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 34px rgba(255,255,255,.15)}
 
-      @keyframes idle-wobble{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-2px) rotate(-.6deg)}}
+      /* Animations */
+      @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 8px rgba(255,255,255,.08)); } to{ filter: drop-shadow(0 0 28px rgba(255,255,255,.35)); } }
+      @keyframes hover-shake{
+        0%{ transform: translate(0,0) rotate(0) }
+        20%{ transform: translate(1px,-1px) rotate(.2deg) }
+        40%{ transform: translate(-1px,1px) rotate(-.2deg) }
+        60%{ transform: translate(1px,0) rotate(.15deg) }
+        80%{ transform: translate(0,-1px) rotate(-.15deg) }
+        100%{ transform: translate(0,0) rotate(0) }
+      }
 
-      .steam-widget{margin-top:2rem; display:flex; justify-content:center}
+      /* Respect reduced motion */
+      @media (prefers-reduced-motion: reduce){
+        .brand .logo{ animation:none }
+      }
 
-      footer{position:fixed; bottom:0; left:0; right:0; z-index:2; text-align:center; padding:1rem; color:var(--fg-dim); font-size:13px}
+      .steam-widget{margin-top:2.2rem; display:flex; justify-content:center}
+
+      footer{position:fixed; bottom:0; left:0; right:0; z-index:2; text-align:center; padding:1rem; color:#bcbcbc; font-size:13px; mix-blend-mode:difference}
     </style>
   </head>
   <body>
@@ -71,12 +93,12 @@
     <main class="wrap">
       <section class="card">
         <div class="brand">
-          <img src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
+          <img class="logo" src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
         </div>
         <h1 class="title">Atmosphere first.</h1>
         <p class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
         <div class="cta">
-          <a class="btn primary" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/">→ View on Steam</a>
+          <a class="btn" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/">→ View on Steam</a>
           <a class="btn" href="mailto:hello@tillblack.com">Contact</a>
           <a class="btn" href="#about">About</a>
         </div>
@@ -101,9 +123,38 @@
         camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 
         const vertex = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position,1.0);} `;
-        const fragment = `precision highp float; varying vec2 vUv; uniform float uTime; uniform vec2 uResolution; uniform vec3 uAccent; vec2 hash(vec2 p){ p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3))); return -1.0 + 2.0*fract(sin(p)*43758.5453123);} float noise(in vec2 p){const float K1 = 0.366025404; const float K2 = 0.211324865; vec2 i = floor(p + (p.x+p.y)*K1); vec2 a = p - i + (i.x+i.y)*K2; vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0); vec2 b = a - o + K2; vec2 c = a - 1.0 + 2.0*K2; vec3 h = max(0.5 - vec3(dot(a,a), dot(b,b), dot(c,c)), 0.0); vec3 n = h*h*h*h*vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0))); return dot(n, vec3(70.0)); } void main(){ vec2 uv = vUv; vec2 p = (uv - 0.5) * vec2(uResolution.x/uResolution.y, 1.0); float t = uTime*0.08; float n = noise(p*1.8 + vec2(t*0.7, -t*0.5)); float m = noise(p*3.2 - vec2(t*0.4, t*0.6)); float nebula = smoothstep(-0.45, 0.8, n + m*0.6); float grid = (sin((uv.x+t*0.05)*80.0)*sin((uv.y-t*0.04)*80.0))*0.03; float vign = smoothstep(0.95, 0.35, length(uv-0.5)); vec3 base = mix(vec3(0.02,0.02,0.02), vec3(0.9), nebula); vec3 col = mix(base, vec3(1.0), nebula*0.3); col *= vign; gl_FragColor = vec4(col, 1.0);} `;
+        /* Black & white reactive background */
+        const fragment = `
+          precision highp float; varying vec2 vUv; uniform float uTime; uniform vec2 uResolution;
+          // noise helpers
+          vec2 hash(vec2 p){ p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3))); return -1.0 + 2.0*fract(sin(p)*43758.5453123);} 
+          float noise(in vec2 p){
+            const float K1 = 0.366025404; const float K2 = 0.211324865; 
+            vec2 i = floor(p + (p.x+p.y)*K1);
+            vec2 a = p - i + (i.x+i.y)*K2;
+            vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0);
+            vec2 b = a - o + K2; vec2 c = a - 1.0 + 2.0*K2;
+            vec3 h = max(0.5 - vec3(dot(a,a), dot(b,b), dot(c,c)), 0.0);
+            vec3 n = h*h*h*h*vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
+            return dot(n, vec3(70.0));
+          }
+          void main(){
+            vec2 uv = vUv; 
+            vec2 p = (uv - 0.5) * vec2(uResolution.x/uResolution.y, 1.0);
+            float t = uTime*0.08;
+            float n = noise(p*1.8 + vec2(t*0.7, -t*0.5));
+            float m = noise(p*3.2 - vec2(t*0.4, t*0.6));
+            float field = smoothstep(-0.45, 0.8, n + m*0.6);
+            // monochrome bands + vignette
+            float vign = smoothstep(0.96, 0.3, length(uv-0.5));
+            float grid = (sin((uv.x+t*0.05)*80.0)*sin((uv.y-t*0.04)*80.0))*0.08;
+            float bw = clamp(field*0.85 + grid*0.25, 0.0, 1.0);
+            vec3 col = mix(vec3(0.03), vec3(0.98), bw) * vign;
+            gl_FragColor = vec4(col, 1.0);
+          }
+        `;
 
-        uniforms = { uTime: { value: 0 }, uResolution: { value: new THREE.Vector2() }, uAccent: { value: new THREE.Color(0xffffff).toArray() } };
+        uniforms = { uTime: { value: 0 }, uResolution: { value: new THREE.Vector2() } };
         const geo = new THREE.PlaneGeometry(2,2);
         const mat = new THREE.ShaderMaterial({uniforms, vertexShader: vertex, fragmentShader: fragment, depthTest:false, depthWrite:false});
         mesh = new THREE.Mesh(geo, mat);

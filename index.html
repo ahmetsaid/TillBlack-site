@@ -40,9 +40,9 @@
         padding:2rem; text-align:center;
       }
 
-      .brand{position:relative; display:inline-block; margin-bottom:1rem}
+      .brand{display:grid; place-items:center; position:relative; margin-bottom:1rem; width:200px; height:200px;}
       .brand img{
-        width:200px; height:auto; position:absolute; top:0; left:0; right:0; bottom:0; margin:auto; transition:opacity .4s ease;
+        width:200px; height:auto; position:absolute; inset:0; margin:auto; transition:opacity .3s ease;
       }
       .brand img.black{opacity:0;}
       .brand:hover img.white{opacity:0;}
@@ -75,9 +75,9 @@
 
     <main class="wrap">
       <section class="card">
-        <div class="brand" style="width:200px; height:auto;">
-          <img class="white" src="/assets/TillBlack_Logo_white.png" alt="TillBlack logo white" />
-          <img class="black" src="/assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
+        <div class="brand">
+          <img class="white" src="assets/TillBlack_Logo_white.png" alt="TillBlack logo white" />
+          <img class="black" src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
         </div>
         <h1 class="title">Atmosphere first.</h1>
         <p class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
@@ -125,18 +125,17 @@
     <script>
       // Logo micro-glitch pulse (random every 6–10s)
       (function(){
-        const logoEls = document.querySelectorAll('.brand img');
-        if(!logoEls.length) return;
+        const pulseTargets = document.querySelectorAll('.brand');
+        if(!pulseTargets.length) return;
         let timer;
         function pulse(){
-          logoEls.forEach(logoEl=>{
+          pulseTargets.forEach(el=>{
             const dx = (Math.random()*2-1) * 1.2;
             const dy = (Math.random()*2-1) * 1.2;
             const r  = (Math.random()*2-1) * 0.6;
-            logoEl.style.transform = `translate(${dx}px, ${dy}px) rotate(${r}deg)`;
-            logoEl.style.filter = 'drop-shadow(0 0 26px rgba(138,214,255,.55))';
+            el.style.transform = `translate(${dx}px, ${dy}px) rotate(${r}deg)`;
           });
-          setTimeout(()=>{ logoEls.forEach(logoEl=>{logoEl.style.transform=''; logoEl.style.filter='';}); schedule(); }, 160);
+          setTimeout(()=>{ pulseTargets.forEach(el=>{ el.style.transform=''; }); schedule(); }, 160);
         }
         function schedule(){ timer = setTimeout(pulse, 6000 + Math.random()*4000); }
         schedule();

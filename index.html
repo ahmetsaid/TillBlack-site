@@ -55,6 +55,7 @@
       .steam-widget{margin-top:1.6rem; display:flex; justify-content:center}
 
       footer{position:fixed; bottom:0; left:0; right:0; z-index:2; text-align:center; padding:1rem; color:#bcbcbc; font-size:13px; mix-blend-mode:difference}
+      footer, footer *{ mix-blend-mode:difference; }
     </style>
   </head>
   <body>
@@ -80,7 +81,7 @@
       </section>
     </main>
 
-    <footer>© <span id="year"></span> TillBlack. All rights reserved.</footer>
+    <footer><span class="blend">© <span id="year"></span> TillBlack. All rights reserved.</span></footer>
 
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
     <script>

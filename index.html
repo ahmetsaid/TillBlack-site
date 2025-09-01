@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TillBlack — Studio v2</title>
+    <title>TillBlack — Studio</title>
     <meta name="description" content="TillBlack is a small studio crafting moody, atmospheric experiences — including Code of Shadows." />
 
     <!-- Social cards -->
@@ -27,37 +27,29 @@
       #bg{position:fixed; inset:0; z-index:0;}
       .fade-top,.fade-bottom{display:none}
 
-      /* === LAYOUT === */
       .wrap{position:relative; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
       .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; }
 
-      /* Logo */
       .brand{display:grid; place-items:center; margin-top:2rem}
       .brand .logo{ display:block; width:clamp(220px, 32vw, 420px); height:auto; margin:0 auto; filter: drop-shadow(0 0 10px rgba(255,255,255,.12)); animation: pulse-glow 4s ease-in-out infinite alternate; will-change: filter, transform; }
       .brand:hover .logo{ animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1; }
 
-      /* Text & buttons use difference blend for BW bg */
-      .blend{ position:relative; }
-      .blend *{ mix-blend-mode:difference; color:white; }
-
+      .blend, .blend *{ mix-blend-mode:difference; }
       .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .6rem}
-      .sub{max-width:64ch; margin:0 auto 1rem}
+      .sub{color:var(--fg-dim); max-width:64ch; margin:0 auto 1rem; transition:opacity .4s ease}
 
       .cta{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin-top:1rem}
-      .btn{ padding:.9rem 1.15rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18); background:transparent; text-decoration:none; font-weight:700; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
-      .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.6); box-shadow:0 0 34px rgba(255,255,255,.25)}
+      .btn{ padding:.9rem 1.15rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); color:var(--fg); text-decoration:none; font-weight:700; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+      .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 34px rgba(255,255,255,.15)}
 
-      /* Animations */
       @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 8px rgba(255,255,255,.08)); } to{ filter: drop-shadow(0 0 22px rgba(255,255,255,.28)); } }
       @keyframes hover-shake{ 0%{ transform: translate(0,0) rotate(0) } 20%{ transform: translate(1px,-1px) rotate(.2deg) } 40%{ transform: translate(-1px,1px) rotate(-.2deg) } 60%{ transform: translate(1px,0) rotate(.15deg) } 80%{ transform: translate(0,-1px) rotate(-.15deg) } 100%{ transform: translate(0,0) rotate(0) } }
 
-      /* Respect reduced motion */
       @media (prefers-reduced-motion: reduce){ .brand .logo{ animation:none } }
 
       .steam-widget{margin-top:1.6rem; display:flex; justify-content:center}
 
       footer{position:fixed; bottom:0; left:0; right:0; text-align:center; padding:1rem; font-size:13px; mix-blend-mode:difference; color:white;}
-      footer span{ mix-blend-mode:difference; color:white; }
     </style>
   </head>
   <body>
@@ -67,11 +59,11 @@
       <section class="card">
         <div class="blend">
           <h1 class="title">Atmosphere first.</h1>
-          <p class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
+          <p id="main-text" class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
           <div class="cta">
             <a class="btn" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/">→ View on Steam</a>
             <a class="btn" href="mailto:hello@tillblack.com">Contact</a>
-            <a class="btn" href="#about">About</a>
+            <a class="btn" href="#about" onclick="showAbout(event)">About</a>
           </div>
         </div>
         <div class="steam-widget">
@@ -83,7 +75,7 @@
       </section>
     </main>
 
-    <footer><span>© <span id="year"></span> TillBlack. All rights reserved.</span></footer>
+    <footer><span class="blend">© <span id="year"></span> TillBlack. All rights reserved.</span></footer>
 
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
     <script>
@@ -138,6 +130,19 @@
       function onResize(){ const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); uniforms.uResolution.value.set(w, h);} 
       function animate(t){ uniforms.uTime.value = (t||0)*0.001; renderer.render(scene, camera); requestAnimationFrame(animate);} 
       try{init();}catch(e){canvas.style.display='none'; console.warn('WebGL disabled:', e);} 
+
+      // Toggle About text
+      function showAbout(e){
+        e.preventDefault();
+        const mainText = document.getElementById('main-text');
+        if(mainText.dataset.alt === 'true'){
+          mainText.innerHTML = 'TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.';
+          mainText.dataset.alt = 'false';
+        } else {
+          mainText.innerHTML = 'Founded as a branch of DECOL, TillBlack aims to merge digital art and game design into unique, atmospheric projects that resonate beyond the screen.';
+          mainText.dataset.alt = 'true';
+        }
+      }
     </script>
   </body>
 </html>

@@ -40,14 +40,13 @@
         padding:2rem; text-align:center;
       }
 
-      .brand{display:flex; align-items:center; justify-content:center; margin-bottom:1rem; position:relative}
-      .logo{
-        width:200px; height:auto;
-        filter: drop-shadow(0 0 15px rgba(138,214,255,.4));
-        animation: idle-wobble 6s ease-in-out infinite alternate;
-        transition: opacity .3s ease;
+      .brand{position:relative; display:inline-block; margin-bottom:1rem}
+      .brand img{
+        width:200px; height:auto; position:absolute; top:0; left:0; right:0; bottom:0; margin:auto; transition:opacity .4s ease;
       }
-      .logo.hover{opacity:0; position:absolute; top:0; left:50%; transform:translateX(-50%);}
+      .brand img.black{opacity:0;}
+      .brand:hover img.white{opacity:0;}
+      .brand:hover img.black{opacity:1;}
 
       .title{font-size: clamp(28px,5vw,46px); font-weight:700; margin:.5rem 0 1rem}
       .sub{color:var(--fg-dim); max-width:60ch; margin:0 auto 1.2rem}
@@ -63,8 +62,6 @@
       .btn.primary{ border-color: rgba(138,214,255,.5); }
 
       @keyframes idle-wobble{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-2px) rotate(-.6deg)}}
-      .brand:hover .logo.default{opacity:0}
-      .brand:hover .logo.hover{opacity:1}
 
       .steam-widget{margin-top:2rem; display:flex; justify-content:center}
 
@@ -78,9 +75,9 @@
 
     <main class="wrap">
       <section class="card">
-        <div class="brand">
-          <img class="logo default" src="assets/TillBlack_Logo_white.png" alt="TillBlack logo white" />
-          <img class="logo hover" src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
+        <div class="brand" style="width:200px; height:auto;">
+          <img class="white" src="/assets/TillBlack_Logo_white.png" alt="TillBlack logo white" />
+          <img class="black" src="/assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
         </div>
         <h1 class="title">Atmosphere first.</h1>
         <p class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
@@ -128,7 +125,7 @@
     <script>
       // Logo micro-glitch pulse (random every 6–10s)
       (function(){
-        const logoEls = document.querySelectorAll('.logo');
+        const logoEls = document.querySelectorAll('.brand img');
         if(!logoEls.length) return;
         let timer;
         function pulse(){

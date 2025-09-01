@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TillBlack — Studio</title>
+    <title>TillBlack — Studio v2</title>
     <meta name="description" content="TillBlack is a small studio crafting moody, atmospheric experiences — including Code of Shadows." />
 
     <!-- Social cards -->
@@ -31,8 +31,16 @@
       .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; }
 
       .brand{display:grid; place-items:center; margin-top:2rem}
-      .brand .logo{ display:block; width:clamp(220px, 32vw, 420px); height:auto; margin:0 auto; filter: drop-shadow(0 0 10px rgba(255,255,255,.12)); animation: pulse-glow 4s ease-in-out infinite alternate; will-change: filter, transform; }
-      .brand:hover .logo{ animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1; }
+      .brand .logo{ 
+        display:block; 
+        width:clamp(140px, 22vw, 260px); /* smaller logo */
+        height:auto; margin:0 auto; 
+        filter: drop-shadow(0 0 10px rgba(255,255,255,.12));
+        mix-blend-mode:difference; /* logo da difference */
+        animation: pulse-glow 5s ease-in-out infinite alternate, sway 10s ease-in-out infinite; /* subtle sway */
+        will-change: filter, transform;
+      }
+      .brand:hover .logo{ animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1, sway 6s ease-in-out infinite; }
 
       .blend, .blend *{ mix-blend-mode:difference; }
       .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .6rem}
@@ -42,8 +50,9 @@
       .btn{ padding:.9rem 1.15rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); color:var(--fg); text-decoration:none; font-weight:700; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
       .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 34px rgba(255,255,255,.15)}
 
-      @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 8px rgba(255,255,255,.08)); } to{ filter: drop-shadow(0 0 22px rgba(255,255,255,.28)); } }
+      @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 6px rgba(255,255,255,.06)); } to{ filter: drop-shadow(0 0 18px rgba(255,255,255,.22)); } }
       @keyframes hover-shake{ 0%{ transform: translate(0,0) rotate(0) } 20%{ transform: translate(1px,-1px) rotate(.2deg) } 40%{ transform: translate(-1px,1px) rotate(-.2deg) } 60%{ transform: translate(1px,0) rotate(.15deg) } 80%{ transform: translate(0,-1px) rotate(-.15deg) } 100%{ transform: translate(0,0) rotate(0) } }
+      @keyframes sway{ 0%{ transform: translateY(0) } 50%{ transform: translateY(-3px) } 100%{ transform: translateY(0) } }
 
       @media (prefers-reduced-motion: reduce){ .brand .logo{ animation:none } }
 

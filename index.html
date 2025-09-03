@@ -34,7 +34,7 @@
         line-height:1.5; overflow:auto; -webkit-overflow-scrolling: touch;
       }
 
-      #bg{position:fixed; inset:0; z-index:0;}
+      #bg{position:fixed; inset:0; z-index:0; display:block; pointer-events:none;}
 
       .wrap{position:relative; min-height:100svh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 4.5rem}
       .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; }
@@ -65,6 +65,7 @@
         background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
         color:var(--fg); text-decoration:none; font-weight:700;
         transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        cursor:pointer;
       }
       .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 34px rgba(255,255,255,.15)}
 
@@ -88,8 +89,14 @@
         .btn{ padding:.8rem 1rem; }
       }
 
+      /* ensure content paints above canvas */
+      .wrap, footer { position: relative; z-index: 1; }
+        .btn{ padding:.8rem 1rem; }
+      }
+
       /* Word-by-word transition */
       .sub.reveal .word{display:inline-block; opacity:0; transform:translateY(6px); animation:wordIn .4s ease forwards}
+      .title.reveal .word{display:inline-block; opacity:0; transform:translateY(8px); animation:wordIn .5s ease forwards}
       @keyframes wordIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
     </style>
   </head>
@@ -122,7 +129,7 @@
       <span class="blend">© <span id="year"></span> TillBlack. All rights reserved.</span>
     </footer>
 
-    <script src="https://unpkg.com/three@0.160.0/build/three.min.js" defer></script>
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
     <script>
       document.addEventListener('DOMContentLoaded', function(){
@@ -135,6 +142,15 @@
         [...mainText.querySelectorAll('.word')].forEach((el, idx)=>{
           el.style.animationDelay = `${0.05 * idx}s`;
         });
+
+        const titleEl = document.getElementById('site-title');
+        const titleHTML = titleEl.innerHTML;
+        titleEl.innerHTML = buildWordsDeep(titleHTML);
+        [...titleEl.querySelectorAll('.word')].forEach((el, idx)=>{
+          el.style.animationDelay = `${0.07 * idx}s`;
+        });
+        void titleEl.offsetWidth;
+        titleEl.classList.add('reveal');
       });
 
       const TEXT_DEFAULT = 'TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.';
@@ -174,16 +190,8 @@
         const btn = e.target.closest('#aboutBtn');
         if(!btn) return;
         const mainText = document.getElementById('main-text');
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const alt = mainText.dataset.alt === 'true';
         const nextHTML = alt ? TEXT_DEFAULT : TEXT_ABOUT;
-
-        if(reduce){
-          mainText.innerHTML = nextHTML;
-          mainText.dataset.alt = alt ? 'false' : 'true';
-          btn.setAttribute('aria-pressed', alt ? 'false' : 'true');
-          return;
-        }
 
         mainText.classList.remove('reveal');
         mainText.style.opacity = '0';
@@ -198,6 +206,40 @@
           mainText.classList.add('reveal');
         },100);
       });
+
+      // ---- WebGL Background Shader ----
+      (function(){
+        const canvas = document.getElementById('bg');
+        let renderer, scene, camera, uniforms, mesh;
+        function init(){
+          renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          scene = new THREE.Scene();
+          camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+
+          const vertex = `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position,1.0);} `;
+          const fragment = `
+            precision highp float; varying vec2 vUv; uniform float uTime; uniform vec2 uResolution;
+            vec2 hash(vec2 p){ p=vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3))); return -1.0+2.0*fract(sin(p)*43758.5453123);} 
+            float noise(in vec2 p){ const float K1=0.366025404; const float K2=0.211324865; vec2 i=floor(p+(p.x+p.y)*K1); vec2 a=p-i+(i.x+i.y)*K2; vec2 o=(a.x>a.y)?vec2(1.0,0.0):vec2(0.0,1.0); vec2 b=a-o+K2; vec2 c=a-1.0+2.0*K2; vec3 h=max(0.5-vec3(dot(a,a), dot(b,b), dot(c,c)),0.0); vec3 n=h*h*h*h*vec3(dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0))); return dot(n, vec3(70.0)); }
+            void main(){ vec2 uv=vUv; vec2 p=(uv-0.5)*vec2(uResolution.x/uResolution.y,1.0); float t=uTime*0.08; float n1=noise(p*1.6+vec2(t*0.35,-t*0.22)); float n2=noise(p*3.1+vec2(-t*0.18,t*0.27)); float field=smoothstep(-0.45,0.85,n1+n2*0.65); float scan=sin((uv.y+t*0.02)*600.0)*0.010; float grid=sin((uv.x+t*0.015)*80.0)*sin((uv.y-t*0.02)*80.0)*0.010; vec3 nearBlack=vec3(0.01,0.005,0.015); vec3 burgundy=vec3(0.06,0.02,0.08); vec3 purple=vec3(0.01,0.00,0.12); float tone=clamp(field*0.92+grid*0.35+scan*0.2,0.0,1.0); vec3 burgMix=mix(burgundy,purple,smoothstep(0.25,0.95,tone)); vec3 base=mix(nearBlack,burgMix,tone); float vign=smoothstep(0.98,0.35,length(uv-0.5)); float bloom=smoothstep(0.6,1.0,tone)*0.08; vec3 col=(base + bloom) * 1.08; col *= vign; gl_FragColor=vec4(col,1.0);} 
+          `;
+
+          uniforms = { uTime:{value:0}, uResolution:{value:new THREE.Vector2()} };
+          const geo = new THREE.PlaneGeometry(2,2);
+          const mat = new THREE.ShaderMaterial({uniforms, vertexShader:vertex, fragmentShader:fragment, depthTest:false, depthWrite:false});
+          mesh = new THREE.Mesh(geo, mat);
+          scene.add(mesh);
+
+          onResize(); window.addEventListener('resize', onResize);
+          animate();
+        }
+        function onResize(){ const w=innerWidth,h=innerHeight; renderer.setSize(w,h,false); uniforms.uResolution.value.set(w,h);} 
+        function animate(t){ uniforms.uTime.value=(t||0)*0.001; renderer.render(scene,camera); requestAnimationFrame(animate);} 
+        window.addEventListener('load',()=>{ try{init();}catch(e){canvas.style.display='none'; console.warn('WebGL disabled:',e);} });
+      })();
     </script>
+ 
+  
   </body>
 </html>

@@ -15,7 +15,7 @@
       :root{
         --fg: #ffffff;
         --fg-dim:#cfcfcf;
-        --bg: #0b0b0f;
+        --bg: #0b0b0f; /* base body fallback */
       }
       html,body{height:100%}
       body{
@@ -28,26 +28,36 @@
       .fade-top,.fade-bottom{display:none}
 
       .wrap{position:relative; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
-      .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; }
+      .card{ width:min(980px,94vw); background:transparent; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; }
 
+      /* Logo (difference + küçük + sway) */
       .brand{display:grid; place-items:center; margin-top:2rem}
-      .brand .logo{ 
-        display:block; 
-        width:clamp(140px, 22vw, 260px); /* smaller logo */
-        height:auto; margin:0 auto; 
+      .brand .logo{
+        display:block; width:clamp(140px, 22vw, 260px); height:auto; margin:0 auto;
         filter: drop-shadow(0 0 10px rgba(255,255,255,.12));
-        mix-blend-mode:difference; /* logo da difference */
-        animation: pulse-glow 5s ease-in-out infinite alternate, sway 10s ease-in-out infinite; /* subtle sway */
+        mix-blend-mode:difference;
+        animation: pulse-glow 5s ease-in-out infinite alternate, sway 10s ease-in-out infinite;
         will-change: filter, transform;
       }
-      .brand:hover .logo{ animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1, sway 6s ease-in-out infinite; }
+      .brand:hover .logo{
+        animation: pulse-glow 1.4s ease-in-out infinite alternate,
+                   hover-shake .42s ease-in-out 1,
+                   sway 6s ease-in-out infinite;
+      }
 
+      /* Textler difference */
       .blend, .blend *{ mix-blend-mode:difference; }
       .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .6rem}
       .sub{color:var(--fg-dim); max-width:64ch; margin:0 auto 1rem; transition:opacity .4s ease}
 
       .cta{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin-top:1rem}
-      .btn{ padding:.9rem 1.15rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); color:var(--fg); text-decoration:none; font-weight:700; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+      .btn{
+        padding:.9rem 1.15rem; border-radius:.95rem;
+        border:1px solid rgba(255,255,255,.18);
+        background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+        color:var(--fg); text-decoration:none; font-weight:700;
+        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      }
       .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 34px rgba(255,255,255,.15)}
 
       @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 6px rgba(255,255,255,.06)); } to{ filter: drop-shadow(0 0 18px rgba(255,255,255,.22)); } }
@@ -99,67 +109,84 @@
         camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 
         const vertex = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position,1.0);} `;
-        /* ---- Code of Shadows: black + burgundy/purple shader ---- */
-        const fragment = `
-          precision highp float; varying vec2 vUv; uniform float uTime; uniform vec2 uResolution;
 
-          // Helpers
+        /* --- Black + purple (burgundy/magenta dokulu) + hafif teal vurgulu shader --- */
+        const fragment = `
+          precision highp float;
+          varying vec2 vUv;
+          uniform float uTime;
+          uniform vec2  uResolution;
+
+          // hash & simplex-ish noise
           vec2 hash(vec2 p){
             p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3)));
             return -1.0 + 2.0*fract(sin(p)*43758.5453123);
           }
           float noise(in vec2 p){
-            const float K1 = 0.366025404; const float K2 = 0.211324865;
+            const float K1 = 0.366025404, K2 = 0.211324865;
             vec2 i = floor(p + (p.x+p.y)*K1);
             vec2 a = p - i + (i.x+i.y)*K2;
             vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0);
-            vec2 b = a - o + K2; vec2 c = a - 1.0 + 2.0*K2;
+            vec2 b = a - o + K2, c = a - 1.0 + 2.0*K2;
             vec3 h = max(0.5 - vec3(dot(a,a), dot(b,b), dot(c,c)), 0.0);
             vec3 n = h*h*h*h*vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
             return dot(n, vec3(70.0));
           }
 
+          // palette helpers
+          vec3 hex(float r, float g, float b){ return vec3(r,g,b)/255.0; }
+
           void main(){
             vec2 uv = vUv;
-            vec2 p = (uv - 0.5) * vec2(uResolution.x/uResolution.y, 1.0);
+            vec2 p  = (uv - 0.5) * vec2(uResolution.x/uResolution.y, 1.0);
             float t = uTime * 0.08;
 
-            // Layered noise fields (slow, atmospheric)
-            float n1 = noise(p*1.6 + vec2( t*0.35, -t*0.22));
+            // layered fields
+            float n1 = noise(p*1.6 + vec2( t*0.32, -t*0.20));
             float n2 = noise(p*3.1 + vec2(-t*0.18,  t*0.27));
             float field = smoothstep(-0.45, 0.85, n1 + n2*0.65);
 
-            // Scanlines / interference (very subtle)
-            float scan = sin((uv.y + t*0.02) * 900.0) * 0.015;
-            float grid = sin((uv.x*1.0 + t*0.015) * 120.0) * sin((uv.y*1.0 - t*0.02) * 120.0) * 0.028;
+            // scanline / grid / grain
+            float scan = sin((uv.y + t*0.02) * 900.0) * 0.012;
+            float grid = sin((uv.x + t*0.015) * 120.0) * sin((uv.y - t*0.02) * 120.0) * 0.022;
+            float grain = (fract(sin(dot(uv*vec2(uResolution.x/uResolution.y,1.0) + t, vec2(12.9898,78.233))) * 43758.5453)-0.5)*0.05;
 
-            // Film grain
-            float grain = (fract(sin(dot(uv*vec2(uResolution.x/uResolution.y,1.0) + t, vec2(12.9898,78.233))) * 43758.5453) - 0.5) * 0.06;
+            // colors from the Steam widget vibe
+            vec3 nearBlack = hex(14.0,16.0,20.0);      // #0E1014
+            vec3 deepGray  = hex(22.0,26.0,34.0);      // #161A22
+            vec3 purple    = hex(104.0, 34.0,160.0);   // #6822A0
+            vec3 magenta   = hex(176.0, 70.0,240.0);   // #B046F0
+            vec3 teal      = hex( 44.0,176.0,170.0);   // #2CB0AA (çok az vurgu)
 
-            // Palette: near black → deep burgundy → royal purple
-            vec3 nearBlack = vec3(0.01, 0.005, 0.015);
-            vec3 burgundy  = vec3(0.26, 0.02, 0.08);   // koyu bordo
-            vec3 purple    = vec3(0.20, 0.00, 0.28);   // mor ton
+            // tone & hue mix
+            float tone = clamp(field*0.92 + grid*0.30 + scan*0.18, 0.0, 1.0);
+            vec3 baseBand = mix(nearBlack, deepGray, smoothstep(0.0,0.35,tone));
+            vec3 purpBand = mix(purple,    magenta,  smoothstep(0.25,0.95,tone));
 
-            float tone = clamp(field*0.92 + grid*0.35 + scan*0.2, 0.0, 1.0);
-            vec3 burgMix = mix(burgundy, purple, smoothstep(0.25, 0.95, tone));
-            vec3 base    = mix(nearBlack, burgMix, tone);
+            // radial hue sweep: merkezde mor/magenta, köşelerde hafif teal yansıma
+            float ang = atan(p.y, p.x);
+            float sweep = smoothstep(-3.1415, 3.1415, ang + 0.3); // biraz sağa kayık
+            vec3 hueMix = mix(purpBand, teal, pow(sweep, 3.0) * 0.18);
 
-            // Vignette (dark edges)
+            vec3 col = mix(baseBand, hueMix, tone);
+
+            // vignette & bloom
             float vign = smoothstep(0.98, 0.35, length(uv-0.5));
+            float bloom = smoothstep(0.58, 1.0, tone) * 0.10;
 
-            // Subtle bloom along brighter wisps
-            float bloom = smoothstep(0.6, 1.0, tone) * 0.08;
-
-            vec3 col = base + bloom + grain;
+            col = col + bloom + grain;
             col *= vign;
+
             gl_FragColor = vec4(col, 1.0);
           }
         `;
 
         uniforms = { uTime: { value: 0 }, uResolution: { value: new THREE.Vector2() } };
         const geo = new THREE.PlaneGeometry(2,2);
-        const mat = new THREE.ShaderMaterial({uniforms, vertexShader: vertex, fragmentShader: fragment, depthTest:false, depthWrite:false});
+        const mat = new THREE.ShaderMaterial({
+          uniforms, vertexShader: vertex, fragmentShader: fragment,
+          depthTest:false, depthWrite:false
+        });
         mesh = new THREE.Mesh(geo, mat);
         scene.add(mesh);
         onResize(); window.addEventListener('resize', onResize);

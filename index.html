@@ -6,20 +6,10 @@
     <title>TillBlack — Studio</title>
     <meta name="description" content="TillBlack is a small studio crafting moody, atmospheric experiences — including Code of Shadows." />
 
-    <!-- Canonical & Theme -->
-    <link rel="canonical" href="https://tillblack.com/" /> <!-- TODO: set your real domain -->
-    <meta name="theme-color" content="#0b0b0f" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#0b0b0f" media="(prefers-color-scheme: light)">
-
     <!-- Social cards -->
     <meta property="og:title" content="TillBlack — Studio" />
     <meta property="og:description" content="Atmospheric games & visuals. Code of Shadows by TillBlack." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://tillblack.com/og-image.jpg" /> <!-- TODO -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="TillBlack — Studio" />
-    <meta name="twitter:description" content="Atmospheric games & visuals. Code of Shadows by TillBlack." />
-    <meta name="twitter:image" content="https://tillblack.com/og-image.jpg" /> <!-- TODO -->
 
     <style>
       :root{
@@ -34,39 +24,32 @@
         line-height:1.5; overflow:auto; -webkit-overflow-scrolling: touch;
       }
 
-      #bg{position:fixed; inset:0; z-index:0; display:block; pointer-events:none;}
+      #bg{position:fixed; inset:0; z-index:0;}
+      .fade-top,.fade-bottom{display:none}
 
-      .wrap{position:relative; min-height:100svh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 4.5rem}
+      .wrap{position:relative; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
       .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; }
 
       .brand{display:grid; place-items:center; margin-top:2rem}
-      .brand .logo{
-        display:block;
+      .brand .logo{ 
+        display:block; 
         width:clamp(140px, 22vw, 260px);
-        height:auto; margin:0 auto;
+        height:auto; margin:0 auto; 
         filter: drop-shadow(0 0 10px rgba(255,255,255,.12));
         mix-blend-mode:difference;
         animation: pulse-glow 5s ease-in-out infinite alternate, sway 10s ease-in-out infinite;
         will-change: filter, transform;
       }
-      @media (hover: hover) and (pointer: fine){
-        .brand:hover .logo{
-          animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1, sway 6s ease-in-out infinite;
-        }
-      }
+      .brand:hover .logo{ animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1, sway 6s ease-in-out infinite; }
 
-      .blend, .blend *{ mix-blend-mode:difference; }
+      /* Force blend mode for all text content */
+      .blend, .blend *{ mix-blend-mode:difference; color:white; }
+
       .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .6rem}
-      .sub{color:var(--fg-dim); max-width:64ch; margin:0 auto 1rem; transition:opacity .4s ease}
+      .sub{max-width:64ch; margin:0 auto 1rem; transition:opacity .4s ease}
 
       .cta{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin-top:1rem}
-      .btn{
-        padding:.9rem 1.15rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18);
-        background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
-        color:var(--fg); text-decoration:none; font-weight:700;
-        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-        cursor:pointer;
-      }
+      .btn{ padding:.9rem 1.15rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); color:white; text-decoration:none; font-weight:700; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; mix-blend-mode:difference; }
       .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 34px rgba(255,255,255,.15)}
 
       @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 6px rgba(255,255,255,.06)); } to{ filter: drop-shadow(0 0 18px rgba(255,255,255,.22)); } }
@@ -77,169 +60,168 @@
 
       .steam-widget{margin-top:1.6rem; display:flex; justify-content:center}
 
-      footer{
-        position:fixed; bottom:0; left:0; right:0;
-        text-align:center; padding:1rem;
-        font-size:13px; mix-blend-mode:difference; color:white;
-        background: linear-gradient(180deg, transparent, rgba(0,0,0,.35));
-      }
-
-      @media (max-width: 420px){
-        .wrap{ padding:6vh 1rem 5rem; }
-        .btn{ padding:.8rem 1rem; }
-      }
-
-      /* ensure content paints above canvas */
-      .wrap, footer { position: relative; z-index: 1; }
-        .btn{ padding:.8rem 1rem; }
-      }
-
-      /* Word-by-word transition */
-      .sub.reveal .word{display:inline-block; opacity:0; transform:translateY(6px); animation:wordIn .4s ease forwards}
-      .title.reveal .word{display:inline-block; opacity:0; transform:translateY(8px); animation:wordIn .5s ease forwards}
-      @keyframes wordIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
+      footer{position:fixed; bottom:0; left:0; right:0; text-align:center; padding:1rem; font-size:13px; mix-blend-mode:difference; color:white;}
     </style>
   </head>
   <body>
+    <!-- Fullscreen background canvas for shader -->
     <canvas id="bg" aria-hidden="true"></canvas>
 
     <main class="wrap">
-      <section class="card" aria-labelledby="site-title">
+      <section class="card">
         <div class="blend">
-          <h1 id="site-title" class="title">Build. Create. TillBlack.</h1>
-          <p id="main-text" class="sub reveal" aria-live="polite">
-            TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.
-          </p>
+          <h1 class="title">Build. Create. TillBlack.</h1>
+          <p id="main-text" class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
           <div class="cta">
-            <a class="btn" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/" rel="noopener">→ View on Steam</a>
+            <!-- Buttons for Steam, contact, and about -->
+            <a class="btn" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/">→ View on Steam</a>
             <a class="btn" href="mailto:hello@tillblack.com">Contact</a>
-            <button class="btn" type="button" id="aboutBtn" aria-pressed="false">About</button>
+            <a class="btn" href="#about" onclick="showAbout(event)">About</a>
           </div>
         </div>
         <div class="steam-widget">
-          <iframe src="https://store.steampowered.com/widget/3424800/" title="Code of Shadows — Steam widget" frameborder="0" width="646" height="190" loading="lazy"></iframe>
+          <!-- Steam store widget embed -->
+          <iframe src="https://store.steampowered.com/widget/3424800/" frameborder="0" width="646" height="190"></iframe>
         </div>
         <div class="brand">
-          <img class="logo" src="assets/TillBlack_Logo_black.png" alt="TillBlack logo" width="520" height="156" loading="lazy" decoding="async"/>
+          <!-- Logo with blend-mode animations -->
+          <img class="logo" src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
         </div>
       </section>
     </main>
 
-    <footer>
-      <span class="blend">© <span id="year"></span> TillBlack. All rights reserved.</span>
-    </footer>
+    <footer><span class="blend">© <span id="year"></span> TillBlack. All rights reserved.</span></footer>
 
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-
     <script>
-      document.addEventListener('DOMContentLoaded', function(){
-        document.getElementById('year').textContent = new Date().getFullYear();
+      // Set current year dynamically in footer
+      document.getElementById('year').textContent = new Date().getFullYear();
+      const canvas = document.getElementById('bg');
+      let renderer, scene, camera, uniforms, mesh;
 
-        // Animate initial text word by word
-        const mainText = document.getElementById('main-text');
-        const html = mainText.innerHTML;
-        mainText.innerHTML = buildWordsDeep(html);
-        [...mainText.querySelectorAll('.word')].forEach((el, idx)=>{
-          el.style.animationDelay = `${0.05 * idx}s`;
-        });
+      function init(){
+        // Create WebGL renderer attached to canvas
+        renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false });
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        
+        // Create scene and orthographic camera
+        scene = new THREE.Scene();
+        camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 
-        const titleEl = document.getElementById('site-title');
-        const titleHTML = titleEl.innerHTML;
-        titleEl.innerHTML = buildWordsDeep(titleHTML);
-        [...titleEl.querySelectorAll('.word')].forEach((el, idx)=>{
-          el.style.animationDelay = `${0.07 * idx}s`;
-        });
-        void titleEl.offsetWidth;
-        titleEl.classList.add('reveal');
-      });
-
-      const TEXT_DEFAULT = 'TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.';
-      const TEXT_ABOUT   = 'Founded as a branch of DECOL, TillBlack aims to merge digital art and game design into unique, atmospheric projects that resonate beyond the screen.';
-
-      // Improved word builder: wraps text inside nested tags as well (e.g. <strong>)
-      function buildWordsDeep(html){
-        const temp = document.createElement('div');
-        temp.innerHTML = html;
-        function wrap(node){
-          if(node.nodeType === 3){
-            const parts = node.textContent.split(/(\s+)/);
-            const frag = document.createDocumentFragment();
-            parts.forEach(part=>{
-              if(part.trim()==='') frag.appendChild(document.createTextNode(part));
-              else {
-                const w = document.createElement('span');
-                w.className = 'word';
-                w.textContent = part;
-                frag.appendChild(w);
-              }
-            });
-            return frag;
-          } else if(node.nodeType === 1){
-            const el = node.cloneNode(false);
-            node.childNodes.forEach(child=> el.appendChild(wrap(child)));
-            return el;
+        // Vertex shader: pass UV coordinates to fragment shader
+        const vertex = `
+          varying vec2 vUv;
+          void main(){
+            vUv = uv;
+            gl_Position = vec4(position,1.0);
           }
-          return document.createTextNode('');
-        }
-        const out = document.createElement('div');
-        temp.childNodes.forEach(n=> out.appendChild(wrap(n)));
-        return out.innerHTML;
+        `;
+
+        // Fragment shader: generates animated noisy background with three defined colors
+        const fragment = `
+          precision highp float;
+          varying vec2 vUv;
+          uniform float uTime;
+          uniform vec2 uResolution;
+
+          vec2 hash(vec2 p){
+            p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3)));
+            return -1.0 + 2.0*fract(sin(p)*43758.5453123);
+          } 
+
+          float noise(in vec2 p){
+            const float K1 = 0.366025404;
+            const float K2 = 0.211324865;
+            vec2 i = floor(p + (p.x+p.y)*K1);
+            vec2 a = p - i + (i.x+i.y)*K2;
+            vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0);
+            vec2 b = a - o + K2;
+            vec2 c = a - 1.0 + 2.0*K2;
+            vec3 h = max(0.5 - vec3(dot(a,a), dot(b,b), dot(c,c)), 0.0);
+            vec3 n = h*h*h*h*vec3(
+              dot(a, hash(i + 0.0)),
+              dot(b, hash(i + o)),
+              dot(c, hash(i + 1.0))
+            );
+            return dot(n, vec3(70.0));
+          }
+
+          void main(){
+            vec2 uv = vUv;
+            vec2 p = (uv - 0.5) * vec2(uResolution.x/uResolution.y, 1.0);
+            float t = uTime*0.08;
+
+            float n1 = noise(p*1.8 + vec2(t*0.7, -t*0.5));
+            float n2 = noise(p*3.2 - vec2(t*0.4, t*0.6));
+            float f = clamp((n1 + 0.6*n2), 0.0, 1.0);
+
+            // Define three base colors: black, deep blue, deep purple
+            vec3 black = vec3(0.0, 0.0, 0.0);
+            vec3 blue  = vec3(0.05, 0.1, 0.3);
+            vec3 purple= vec3(0.01, 0.02, 0.01);
+
+            // Blend colors based on noise value: black->blue->purple
+            vec3 col;
+            if(f < 0.5){
+              col = mix(black, blue, smoothstep(0.0, 0.5, f));
+            } else {
+              col = mix(blue, purple, smoothstep(0.5, 1.0, f));
+            }
+
+            float vign = smoothstep(0.96, 0.3, length(uv-0.5));
+            col *= vign;
+
+            gl_FragColor = vec4(col, 1.0);
+          }
+        `;
+
+        uniforms = { uTime: { value: 0 }, uResolution: { value: new THREE.Vector2() } };
+
+        const geo = new THREE.PlaneGeometry(2,2);
+        const mat = new THREE.ShaderMaterial({
+          uniforms,
+          vertexShader: vertex,
+          fragmentShader: fragment,
+          depthTest:false,
+          depthWrite:false,
+          transparent:false
+        });
+        mesh = new THREE.Mesh(geo, mat);
+        scene.add(mesh);
+
+        onResize();
+        window.addEventListener('resize', onResize);
+        animate();
       }
 
-      document.addEventListener('click', function(e){
-        const btn = e.target.closest('#aboutBtn');
-        if(!btn) return;
+      function onResize(){
+        const w = innerWidth, h = innerHeight;
+        renderer.setSize(w, h, false);
+        uniforms.uResolution.value.set(w, h);
+      } 
+
+      function animate(t){
+        uniforms.uTime.value = (t||0)*0.001;
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      } 
+
+      try{init();}catch(e){
+        canvas.style.display='none';
+        console.warn('WebGL disabled:', e);
+      } 
+
+      function showAbout(e){
+        e.preventDefault();
         const mainText = document.getElementById('main-text');
-        const alt = mainText.dataset.alt === 'true';
-        const nextHTML = alt ? TEXT_DEFAULT : TEXT_ABOUT;
-
-        mainText.classList.remove('reveal');
-        mainText.style.opacity = '0';
-        setTimeout(()=>{
-          mainText.innerHTML = buildWordsDeep(nextHTML);
-          [...mainText.querySelectorAll('.word')].forEach((el, idx)=>{
-            el.style.animationDelay = `${0.05 * idx}s`;
-          });
-          mainText.dataset.alt = alt ? 'false' : 'true';
-          btn.setAttribute('aria-pressed', alt ? 'false' : 'true');
-          mainText.style.opacity = '1';
-          mainText.classList.add('reveal');
-        },100);
-      });
-
-      // ---- WebGL Background Shader ----
-      (function(){
-        const canvas = document.getElementById('bg');
-        let renderer, scene, camera, uniforms, mesh;
-        function init(){
-          renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-          scene = new THREE.Scene();
-          camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
-
-          const vertex = `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position,1.0);} `;
-          const fragment = `
-            precision highp float; varying vec2 vUv; uniform float uTime; uniform vec2 uResolution;
-            vec2 hash(vec2 p){ p=vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3))); return -1.0+2.0*fract(sin(p)*43758.5453123);} 
-            float noise(in vec2 p){ const float K1=0.366025404; const float K2=0.211324865; vec2 i=floor(p+(p.x+p.y)*K1); vec2 a=p-i+(i.x+i.y)*K2; vec2 o=(a.x>a.y)?vec2(1.0,0.0):vec2(0.0,1.0); vec2 b=a-o+K2; vec2 c=a-1.0+2.0*K2; vec3 h=max(0.5-vec3(dot(a,a), dot(b,b), dot(c,c)),0.0); vec3 n=h*h*h*h*vec3(dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0))); return dot(n, vec3(70.0)); }
-            void main(){ vec2 uv=vUv; vec2 p=(uv-0.5)*vec2(uResolution.x/uResolution.y,1.0); float t=uTime*0.08; float n1=noise(p*1.6+vec2(t*0.35,-t*0.22)); float n2=noise(p*3.1+vec2(-t*0.18,t*0.27)); float field=smoothstep(-0.45,0.85,n1+n2*0.65); float scan=sin((uv.y+t*0.02)*600.0)*0.010; float grid=sin((uv.x+t*0.015)*80.0)*sin((uv.y-t*0.02)*80.0)*0.010; vec3 nearBlack=vec3(0.01,0.005,0.015); vec3 burgundy=vec3(0.06,0.02,0.08); vec3 purple=vec3(0.01,0.00,0.12); float tone=clamp(field*0.92+grid*0.35+scan*0.2,0.0,1.0); vec3 burgMix=mix(burgundy,purple,smoothstep(0.25,0.95,tone)); vec3 base=mix(nearBlack,burgMix,tone); float vign=smoothstep(0.98,0.35,length(uv-0.5)); float bloom=smoothstep(0.6,1.0,tone)*0.08; vec3 col=(base + bloom) * 1.08; col *= vign; gl_FragColor=vec4(col,1.0);} 
-          `;
-
-          uniforms = { uTime:{value:0}, uResolution:{value:new THREE.Vector2()} };
-          const geo = new THREE.PlaneGeometry(2,2);
-          const mat = new THREE.ShaderMaterial({uniforms, vertexShader:vertex, fragmentShader:fragment, depthTest:false, depthWrite:false});
-          mesh = new THREE.Mesh(geo, mat);
-          scene.add(mesh);
-
-          onResize(); window.addEventListener('resize', onResize);
-          animate();
+        if(mainText.dataset.alt === 'true'){
+          mainText.innerHTML = 'TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.';
+          mainText.dataset.alt = 'false';
+        } else {
+          mainText.innerHTML = 'Founded as a branch of DECOL, TillBlack aims to merge digital art and game design into unique, atmospheric projects that resonate beyond the screen.';
+          mainText.dataset.alt = 'true';
         }
-        function onResize(){ const w=innerWidth,h=innerHeight; renderer.setSize(w,h,false); uniforms.uResolution.value.set(w,h);} 
-        function animate(t){ uniforms.uTime.value=(t||0)*0.001; renderer.render(scene,camera); requestAnimationFrame(animate);} 
-        window.addEventListener('load',()=>{ try{init();}catch(e){canvas.style.display='none'; console.warn('WebGL disabled:',e);} });
-      })();
+      }
     </script>
- 
-  
   </body>
 </html>

@@ -73,7 +73,7 @@
 
       /* Typography scale using clamp for responsiveness */
       .title{font-size: clamp(36px,4vw,64px); font-weight:800; margin:0 0 .6rem}
-      .sub{max-width:70ch; margin:0 auto 1.5rem; font-size:clamp(12px,1.4vw,17px)}
+      .sub{max-width:70ch; margin:0 auto 1.5rem; font-size:clamp(12px,1.4vw,24px)}
 
       /* CTA row with compact buttons */
       .cta{display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap; margin-top:1.2rem}
@@ -103,7 +103,7 @@
       /* Large-screen refinements */
       @media (min-width:1800px){
         .title{font-size:72px;}
-        .sub{font-size:1px;} /* NOTE: current design sets subtitle very small on huge screens */
+        .sub{font-size:12px;} /* NOTE: current design sets subtitle very small on huge screens */
         .btn{font-size:16px; padding:0.7rem 1.2rem;}
       }
     </style>

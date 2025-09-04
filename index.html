@@ -212,7 +212,7 @@
             // Aspect-corrected coordinates centered at 0
             vec2 uv = vUv;
             vec2 p = (uv - 0.5) * vec2(uResolution.x/uResolution.y, 1.0);
-            float t = uTime*0.042; // global time scaling (slower = calmer)
+            float t = uTime*0.062; // global time scaling (slower = calmer)
 
             // Two animated noise layers traveling in different directions/frequencies
             float n1 = noise(p*1.8 + vec2(t*0.7, -t*0.5));

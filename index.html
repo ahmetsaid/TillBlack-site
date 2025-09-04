@@ -17,54 +17,54 @@
         --fg-dim:#cfcfcf;
         --bg: #0b0b0f;
       }
-      html,body{height:100%}
+      html,body{height:100%; margin:0; overflow:hidden;} /* Hide scrollbars */
       body{
-        margin:0; background:var(--bg); color:var(--fg);
+        background:var(--bg); color:var(--fg);
         font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
-        line-height:1.5; overflow:auto; -webkit-overflow-scrolling: touch;
+        line-height:1.5;
       }
 
       #bg{position:fixed; inset:0; z-index:0;}
-      .fade-top,.fade-bottom{display:none}
 
-      .wrap{position:relative; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:8vh 2rem 2rem}
-      .card{ width:min(980px,94vw); border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; }
+      /* Layout tweaks */
+      .wrap{position:relative; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:0 2rem; box-sizing:border-box;}
+      .card{ width:100%; max-width:1200px; border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; gap:2rem; }
 
       .brand{display:grid; place-items:center; margin-top:2rem}
       .brand .logo{ 
         display:block; 
-        width:clamp(140px, 22vw, 260px);
+        width:clamp(140px, 16vw, 260px);
         height:auto; margin:0 auto; 
         filter: drop-shadow(0 0 10px rgba(255,255,255,.12));
         mix-blend-mode:difference;
         animation: pulse-glow 5s ease-in-out infinite alternate, sway 10s ease-in-out infinite;
-        will-change: filter, transform;
       }
-      .brand:hover .logo{ animation: pulse-glow 1.4s ease-in-out infinite alternate, hover-shake .42s ease-in-out 1, sway 6s ease-in-out infinite; }
 
-      /* Force blend mode for all text content */
       .blend, .blend *{ mix-blend-mode:difference; color:white; }
 
-      .title{font-size: clamp(30px,5.2vw,56px); font-weight:800; margin:0 0 .6rem}
-      .sub{max-width:64ch; margin:0 auto 1rem; transition:opacity .4s ease}
+      .title{font-size: clamp(36px,4vw,64px); font-weight:800; margin:0 0 .6rem}
+      .sub{max-width:70ch; margin:0 auto 1.5rem; font-size:clamp(16px,1.4vw,20px)}
 
-      .cta{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin-top:1rem}
-      .btn{ padding:.9rem 1.15rem; border-radius:.95rem; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); color:white; text-decoration:none; font-weight:700; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; mix-blend-mode:difference; }
+      .cta{display:flex; gap:1.2rem; justify-content:center; flex-wrap:wrap; margin-top:1.5rem}
+      .btn{ padding:1rem 1.5rem; border-radius:1rem; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); color:white; text-decoration:none; font-weight:700; font-size:clamp(14px,1.1vw,18px); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; mix-blend-mode:difference; }
       .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 34px rgba(255,255,255,.15)}
 
       @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 6px rgba(255,255,255,.06)); } to{ filter: drop-shadow(0 0 18px rgba(255,255,255,.22)); } }
-      @keyframes hover-shake{ 0%{ transform: translate(0,0) rotate(0) } 20%{ transform: translate(1px,-1px) rotate(.2deg) } 40%{ transform: translate(-1px,1px) rotate(-.2deg) } 60%{ transform: translate(1px,0) rotate(.15deg) } 80%{ transform: translate(0,-1px) rotate(-.15deg) } 100%{ transform: translate(0,0) rotate(0) } }
       @keyframes sway{ 0%{ transform: translateY(0) } 50%{ transform: translateY(-3px) } 100%{ transform: translateY(0) } }
 
-      @media (prefers-reduced-motion: reduce){ .brand .logo{ animation:none } }
+      .steam-widget{margin-top:2rem; display:flex; justify-content:center}
+      .steam-widget iframe{ width:100%; max-width:700px; height:190px; }
 
-      .steam-widget{margin-top:1.6rem; display:flex; justify-content:center}
+      footer{position:fixed; bottom:0; left:0; right:0; text-align:center; padding:1rem; font-size:14px; mix-blend-mode:difference; color:white; background:transparent; z-index:10;}
 
-      footer{position:fixed; bottom:0; left:0; right:0; text-align:center; padding:1rem; font-size:13px; mix-blend-mode:difference; color:white;}
+      @media (min-width:1800px){
+        .title{font-size:72px;}
+        .sub{font-size:22px;}
+        .btn{font-size:20px; padding:1.1rem 1.8rem;}
+      }
     </style>
   </head>
   <body>
-    <!-- Fullscreen background canvas for shader -->
     <canvas id="bg" aria-hidden="true"></canvas>
 
     <main class="wrap">
@@ -73,18 +73,15 @@
           <h1 class="title">Build. Create. TillBlack.</h1>
           <p id="main-text" class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
           <div class="cta">
-            <!-- Buttons for Steam, contact, and about -->
             <a class="btn" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/">→ View on Steam</a>
             <a class="btn" href="mailto:hello@tillblack.com">Contact</a>
             <a class="btn" href="#about" onclick="showAbout(event)">About</a>
           </div>
         </div>
         <div class="steam-widget">
-          <!-- Steam store widget embed -->
-          <iframe src="https://store.steampowered.com/widget/3424800/" frameborder="0" width="646" height="190"></iframe>
+          <iframe src="https://store.steampowered.com/widget/3424800/" frameborder="0"></iframe>
         </div>
         <div class="brand">
-          <!-- Logo with blend-mode animations -->
           <img class="logo" src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
         </div>
       </section>
@@ -94,21 +91,16 @@
 
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
     <script>
-      // Set current year dynamically in footer
       document.getElementById('year').textContent = new Date().getFullYear();
       const canvas = document.getElementById('bg');
       let renderer, scene, camera, uniforms, mesh;
 
       function init(){
-        // Create WebGL renderer attached to canvas
         renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false });
         renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-        
-        // Create scene and orthographic camera
         scene = new THREE.Scene();
         camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 
-        // Vertex shader: pass UV coordinates to fragment shader
         const vertex = `
           varying vec2 vUv;
           void main(){
@@ -117,7 +109,6 @@
           }
         `;
 
-        // Fragment shader: generates animated noisy background with three defined colors
         const fragment = `
           precision highp float;
           varying vec2 vUv;
@@ -127,7 +118,7 @@
           vec2 hash(vec2 p){
             p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3)));
             return -1.0 + 2.0*fract(sin(p)*43758.5453123);
-          } 
+          }
 
           float noise(in vec2 p){
             const float K1 = 0.366025404;
@@ -155,12 +146,11 @@
             float n2 = noise(p*3.2 - vec2(t*0.4, t*0.6));
             float f = clamp((n1 + 0.6*n2), 0.0, 1.0);
 
-           // Define three base colors: black, deep blue, deep purple
+            // Define three base colors: black, deep blue, deep purple
             vec3 black = vec3(0.0, 0.0, 0.0);
             vec3 blue  = vec3(0.1, 0.1, 0.3);
             vec3 purple= vec3(0.01, 0.02, 0.01);
 
-            // Blend colors based on noise value: black->blue->purple
             vec3 col;
             if(f < 0.5){
               col = mix(black, blue, smoothstep(0.0, 0.5, f));
@@ -168,7 +158,7 @@
               col = mix(blue, purple, smoothstep(0.5, 1.0, f));
             }
 
-            float vign = smoothstep(0.96, 0.1, length(uv-0.5));
+            float vign = smoothstep(0.96, 0.15, length(uv-0.5));
             col *= vign;
 
             gl_FragColor = vec4(col, 1);
@@ -198,18 +188,18 @@
         const w = innerWidth, h = innerHeight;
         renderer.setSize(w, h, false);
         uniforms.uResolution.value.set(w, h);
-      } 
+      }
 
       function animate(t){
         uniforms.uTime.value = (t||0)*0.001;
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
-      } 
+      }
 
       try{init();}catch(e){
         canvas.style.display='none';
         console.warn('WebGL disabled:', e);
-      } 
+      }
 
       function showAbout(e){
         e.preventDefault();

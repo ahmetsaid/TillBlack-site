@@ -12,73 +12,54 @@
     <meta property="og:type" content="website" />
 
     <style>
-      /* ==========================
-         THEME TOKENS & GLOBALS
-         ========================== */
       :root{
-        --fg: #ffffff;     /* primary foreground (text) color */
-        --fg-dim:#cfcfcf;  /* secondary text color */
-        --bg: #0b0b0f;     /* page background behind the shader */
+        --fg: #ffffff;
+        --fg-dim:#cfcfcf;
+        --bg: #0b0b0f;
       }
 
-      /* Make the viewport fill the screen and hide scrollbars on initial load */
-      html,body{height:100%; margin:0; overflow:hidden;} /* Hide scrollbars */
+      html,body{height:100%; margin:0; overflow:hidden;}
 
       body{
-        background:var(--bg); /* Fallback color behind WebGL canvas */
+        background:var(--bg);
         color:var(--fg);
         font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
         line-height:1.5;
       }
 
-      /* The WebGL background canvas sits fixed under all content */
       #bg{position:fixed; inset:0; z-index:0;}
 
-      /* ==========================
-         LAYOUT
-         ========================== */
-      /*
-        .wrap is the main vertical flex container.
-        - justify-content:flex-start pushes content towards the top
-        - padding-top controls header vertical offset (in viewport height)
-        - overflow hidden on <body> prevents any scroll on first paint
-      */
       .wrap{
         position:relative;
         height:100%;
         display:flex;
         flex-direction:column;
-        justify-content:flex-start;   /* content hugs the top */
+        justify-content:flex-start;
         align-items:center;
-        padding:12vh 2rem 0;          /* top spacing = 12% viewport height; sides = 2rem */
+        padding:12vh 2rem 6rem;
         box-sizing:border-box;
       }
 
-      /* Card holds hero content; keeps a max readable width */
-      .card{ width:100%; max-width:1200px; border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; gap:2rem; }
+      .card{ width:100%; max-width:1200px; text-align:center; display:flex; flex-direction:column; gap:2rem; }
 
-      /* Brand lockup (logo) with a subtle animated glow */
       .brand{display:grid; place-items:center; margin-top:2rem}
       .brand .logo{ 
         display:block; 
-        width:clamp(140px, 16vw, 260px); /* Responsive logo width */
+        width:clamp(140px, 16vw, 260px);
         height:auto; margin:0 auto; 
         filter: drop-shadow(0 0 10px rgba(255,255,255,.12));
-        mix-blend-mode:difference; /* Ensure it pops over dark/light areas */
+        mix-blend-mode:difference;
         animation: pulse-glow 5s ease-in-out infinite alternate, sway 10s ease-in-out infinite;
       }
 
-      /* Force difference blend for all hero text to sit nicely over shader */
       .blend, .blend *{ mix-blend-mode:difference; color:white; }
 
-      /* Typography scale using clamp for responsiveness */
       .title{font-size: clamp(36px,4vw,64px); font-weight:800; margin:0 0 .6rem}
       .sub{max-width:70ch; margin:0 auto 1.5rem; font-size:clamp(12px,1.4vw,15px)}
 
-      /* CTA row with compact buttons */
       .cta{display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap; margin-top:1.2rem}
       .btn{ 
-        padding:0.6rem 1rem; /* Button height & width */
+        padding:0.6rem 1rem;
         border-radius:0.7rem;
         border:1px solid rgba(255,255,255,.18);
         background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
@@ -89,33 +70,47 @@
       }
       .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 28px rgba(255,255,255,.15)}
 
-      /* Small, tasteful motion for logo */
       @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 6px rgba(255,255,255,.06)); } to{ filter: drop-shadow(0 0 18px rgba(255,255,255,.22)); } }
       @keyframes sway{ 0%{ transform: translateY(0) } 50%{ transform: translateY(-3px) } 100%{ transform: translateY(0) } }
 
-      /* Steam widget scales down on small screens, capped on large */
       .steam-widget{margin-top:1.5rem; display:flex; justify-content:center}
       .steam-widget iframe{ width:100%; max-width:700px; height:190px; }
 
-      /* Footer is pinned to the bottom and always visible */
-      footer{position:fixed; bottom:0; left:0; right:0; text-align:center; padding:1rem; font-size:14px; mix-blend-mode:difference; color:white; background:transparent; z-index:10;}
+      footer{position:fixed; bottom:0; left:0; right:0; text-align:center; padding:1rem; font-size:clamp(10px, 2vh, 14px); mix-blend-mode:difference; color:white; background:transparent; z-index:10;}
 
-      /* Large-screen refinements */
       @media (min-width:1800px){
         .title{font-size:72px;}
-        .sub{font-size:17px;} /* NOTE: current design sets subtitle very small on huge screens */
+        .sub{font-size:17px;}
         .btn{font-size:16px; padding:0.7rem 1.2rem;}
       }
 
-      /* ===== Mobile landscape only: allow scroll & tighten spacing ===== */
+      /* Mobile landscape */
       @media (orientation: landscape) and (max-height: 480px){
         html, body{ overflow-y:auto; }
-        .wrap{ padding:8vh 1rem 6rem; }
-        .title{ font-size: clamp(22px, 4.2vw, 36px); }
-        .sub{ font-size: clamp(12px, 2.6vw, 15px); max-width: 64ch; }
-        .cta{ gap:.6rem; }
-        .btn{ padding:.55rem .9rem; font-size:14px; }
-        .steam-widget iframe{ height:170px; }
+        .wrap{ padding:4vh 1rem 6.5rem; }
+        .title{ font-size: clamp(20px, 3.8vw, 32px); }
+        .sub{ font-size: clamp(12px, 2.4vw, 14px); max-width: 60ch; }
+        .cta{ gap:.5rem; }
+        .btn{ padding:.5rem .85rem; font-size:13px; }
+        .steam-widget iframe{ height:150px; }
+        .brand{ margin-top:.5rem; }
+        .brand .logo{ width: clamp(90px, 16vw, 130px); }
+        footer{ font-size: clamp(9px, 1.8vh, 12px); }
+      }
+        .wrap{ padding:6vh 1rem 8rem; }
+        .title{ font-size: clamp(22px, 4.2vw, 34px); }
+        .sub{ font-size: clamp(12px, 2.4vw, 15px); max-width: 64ch; }
+        .cta{ gap:.5rem; }
+        .btn{ padding:.5rem .8rem; font-size:13px; }
+        .steam-widget iframe{ height:190px; } /* full widget visible */
+        footer{ font-size:12px; padding:0.4rem; }
+        .brand{ margin-top:1rem; }
+        .brand .logo{ width:clamp(100px, 22vw, 160px); }
+      }
+    /* iOS safe-area support so footer doesn't collide */
+      @supports (padding: env(safe-area-inset-bottom)){
+        .wrap{ padding-bottom: calc(6rem + env(safe-area-inset-bottom)); }
+        footer{ padding-bottom: env(safe-area-inset-bottom); }
       }
     </style>
   </head>

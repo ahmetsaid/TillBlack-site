@@ -12,73 +12,55 @@
     <meta property="og:type" content="website" />
 
     <style>
-      /* ==========================
-         THEME TOKENS & GLOBALS
-         ========================== */
       :root{
-        --fg: #ffffff;     /* primary foreground (text) color */
-        --fg-dim:#cfcfcf;  /* secondary text color */
-        --bg: #0b0b0f;     /* page background behind the shader */
+        --fg: #ffffff;
+        --fg-dim:#cfcfcf;
+        --bg: #0b0b0f;
       }
 
-      /* Make the viewport fill the screen and hide scrollbars on initial load */
-      html,body{height:100%; margin:0; overflow:hidden;} /* Hide scrollbars */
+      /* Use svh for safe viewport height on iOS Safari */
+      html,body{min-height:100svh; margin:0; overflow:hidden;}
 
       body{
-        background:var(--bg); /* Fallback color behind WebGL canvas */
+        background:var(--bg);
         color:var(--fg);
         font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
         line-height:1.5;
       }
 
-      /* The WebGL background canvas sits fixed under all content */
       #bg{position:fixed; inset:0; z-index:0;}
 
-      /* ==========================
-         LAYOUT
-         ========================== */
-      /*
-        .wrap is the main vertical flex container.
-        - justify-content:flex-start pushes content towards the top
-        - padding-top controls header vertical offset (in viewport height)
-        - overflow hidden on <body> prevents any scroll on first paint
-      */
       .wrap{
         position:relative;
-        height:100%;
+        min-height:100svh;             /* safer on iOS Safari than 100vh */
         display:flex;
         flex-direction:column;
-        justify-content:flex-start;   /* content hugs the top */
+        justify-content:flex-start;
         align-items:center;
-        padding:12vh 2rem 0;          /* top spacing = 12% viewport height; sides = 2rem */
+        padding:12vh 2rem 0;
         box-sizing:border-box;
       }
 
-      /* Card holds hero content; keeps a max readable width */
       .card{ width:100%; max-width:1200px; border-radius:1.2rem; background:transparent; text-align:center; display:flex; flex-direction:column; gap:2rem; }
 
-      /* Brand lockup (logo) with a subtle animated glow */
       .brand{display:grid; place-items:center; margin-top:2rem}
       .brand .logo{ 
         display:block; 
-        width:clamp(140px, 16vw, 260px); /* Responsive logo width */
+        width:clamp(140px, 16vw, 260px);
         height:auto; margin:0 auto; 
         filter: drop-shadow(0 0 10px rgba(255,255,255,.12));
-        mix-blend-mode:difference; /* Ensure it pops over dark/light areas */
+        mix-blend-mode:difference;
         animation: pulse-glow 5s ease-in-out infinite alternate, sway 10s ease-in-out infinite;
       }
 
-      /* Force difference blend for all hero text to sit nicely over shader */
       .blend, .blend *{ mix-blend-mode:difference; color:white; }
 
-      /* Typography scale using clamp for responsiveness */
       .title{font-size: clamp(36px,4vw,64px); font-weight:800; margin:0 0 .6rem}
       .sub{max-width:70ch; margin:0 auto 1.5rem; font-size:clamp(12px,1.4vw,15px)}
 
-      /* CTA row with compact buttons */
       .cta{display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap; margin-top:1.2rem}
       .btn{ 
-        padding:0.6rem 1rem; /* Button height & width */
+        padding:0.6rem 1rem;
         border-radius:0.7rem;
         border:1px solid rgba(255,255,255,.18);
         background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
@@ -89,111 +71,93 @@
       }
       .btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.32); box-shadow:0 0 28px rgba(255,255,255,.15)}
 
-      /* Small, tasteful motion for logo */
       @keyframes pulse-glow{ from{ filter: drop-shadow(0 0 6px rgba(255,255,255,.06)); } to{ filter: drop-shadow(0 0 18px rgba(255,255,255,.22)); } }
       @keyframes sway{ 0%{ transform: translateY(0) } 50%{ transform: translateY(-3px) } 100%{ transform: translateY(0) } }
 
-      /* Steam widget scales down on small screens, capped on large */
       .steam-widget{margin-top:1.5rem; display:flex; justify-content:center}
       .steam-widget iframe{ width:100%; max-width:700px; height:190px; }
 
-      /* Footer is pinned to the bottom and always visible */
       footer{position:fixed; bottom:0; left:0; right:0; text-align:center; padding:1rem; font-size:14px; mix-blend-mode:difference; color:white; background:transparent; z-index:10;}
 
-      /* Large-screen refinements */
       @media (min-width:1800px){
         .title{font-size:72px;}
-        .sub{font-size:17px;} /* NOTE: current design sets subtitle very small on huge screens */
+        .sub{font-size:17px;}
         .btn{font-size:16px; padding:0.7rem 1.2rem;}
+      }
+
+      /* ===== Mobile (iPhone) tweaks ===== */
+      @media (max-width: 640px){
+        .wrap{ padding:6vh 1rem 0; }
+        .title{ font-size: clamp(22px, 7vw, 30px); }
+        .sub{ font-size: clamp(13px, 3.6vw, 15px); max-width: 60ch; }
+        .cta{ flex-direction: column; gap: .6rem; }
+        .btn{ font-size: 14px; padding: .7rem .95rem; border-radius: .8rem; }
+        .steam-widget{ margin-top: 1rem; }
+        .steam-widget iframe{ width:100%; height:155px; }
+        .brand{ margin-top: 1rem; }
+        .brand .logo{ width: clamp(120px, 32vw, 180px); }
+        footer{ font-size: 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+      }
+
+      @supports (padding: env(safe-area-inset-top)){
+        body{ padding-bottom: env(safe-area-inset-bottom); }
       }
     </style>
   </head>
   <body>
-    <!-- Fullscreen WebGL background canvas (drawn by Three.js) -->
     <canvas id="bg" aria-hidden="true"></canvas>
 
     <main class="wrap">
       <section class="card">
         <div class="blend">
-          <!-- HERO TITLE: its vertical position comes from .wrap padding/top alignment -->
           <h1 class="title">Build. Create. TillBlack.</h1>
-          <!-- Subtitle text under the hero title -->
           <p id="main-text" class="sub">TillBlack is a studio blending art and technology to craft moody, timeless experiences. Our current title is <strong>Code of Shadows</strong>.</p>
-          <!-- Primary calls-to-action -->
           <div class="cta">
             <a class="btn" href="https://store.steampowered.com/app/3424800/Code_of_Shadows/">→ View on Steam</a>
             <a class="btn" href="mailto:hello@tillblack.com">Contact</a>
             <a class="btn" href="#about" onclick="showAbout(event)">About</a>
           </div>
         </div>
-        <!-- Optional Steam widget embed under hero copy -->
         <div class="steam-widget">
           <iframe src="https://store.steampowered.com/widget/3424800/" frameborder="0"></iframe>
         </div>
-        <!-- Logo / mark -->
         <div class="brand">
           <img class="logo" src="assets/TillBlack_Logo_black.png" alt="TillBlack logo black" />
         </div>
       </section>
     </main>
 
-    <!-- Footer copyright stays visible (position: fixed) -->
     <footer><span class="blend">© <span id="year"></span> TillBlack. All rights reserved.</span></footer>
 
-    <!-- Three.js for WebGL rendering -->
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
     <script>
-      /* ==========================
-         UTILITIES
-         ========================== */
-      // Set current year once (no reflow issues)
       document.getElementById('year').textContent = new Date().getFullYear();
-
-      // Cache DOM refs
       const canvas = document.getElementById('bg');
       let renderer, scene, camera, uniforms, mesh;
-
-      /* ==========================
-         THREE.JS SETUP
-         ========================== */
       function init(){
-        // WebGLRenderer binds to our fixed canvas. alpha:false = opaque, avoids transparency banding.
         renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false });
-        renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); // cap devicePixelRatio for perf
-
-        // Minimal scene + ortho camera to render a full-screen quad
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
         scene = new THREE.Scene();
         camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
-
-        // Vertex shader: passes UVs straight to the fragment stage and draws a full-screen quad
         const vertex = `
           varying vec2 vUv;
           void main(){
-            vUv = uv;                    // hand UVs to fragment shader
-            gl_Position = vec4(position,1.0); // already in clip space for PlaneGeometry(2,2)
+            vUv = uv;
+            gl_Position = vec4(position,1.0);
           }
         `;
-
-        // Fragment shader: builds a two-layer value-noise field and remaps it to 3 colors
         const fragment = `
           precision highp float;
-          varying vec2 vUv;             // incoming texture coordinates from vertex shader
-          uniform float uTime;          // time in seconds (advanced in animate())
-          uniform vec2 uResolution;     // viewport resolution for aspect-correct mapping
-
-          /* --------------------------
-             Hash & value-noise helpers
-             -------------------------- */
+          varying vec2 vUv;
+          uniform float uTime;
+          uniform vec2 uResolution;
           vec2 hash(vec2 p){
-            // Project p onto two skewed axes and scramble with sin/fract for pseudo-randomness
             p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3)));
             return -1.0 + 2.0*fract(sin(p)*43758.5453123);
           }
-
           float noise(in vec2 p){
-            // 2D simplex-like value noise (analytical gradients via hash)
-            const float K1 = 0.366025404; // (sqrt(3)-1)/2
-            const float K2 = 0.211324865; // (3-sqrt(3))/6
+            const float K1 = 0.366025404;
+            const float K2 = 0.211324865;
             vec2 i = floor(p + (p.x+p.y)*K1);
             vec2 a = p - i + (i.x+i.y)*K2;
             vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0);
@@ -205,87 +169,60 @@
               dot(b, hash(i + o)),
               dot(c, hash(i + 1.0))
             );
-            return dot(n, vec3(70.0)); // scale result to ~[-1,1]
+            return dot(n, vec3(70.0));
           }
-
           void main(){
-            // Aspect-corrected coordinates centered at 0
             vec2 uv = vUv;
             vec2 p = (uv - 0.5) * vec2(uResolution.x/uResolution.y, 1.0);
-            float t = uTime*0.062; // global time scaling (slower = calmer)
-
-            // Two animated noise layers traveling in different directions/frequencies
+            float t = uTime*0.062;
             float n1 = noise(p*1.8 + vec2(t*0.7, -t*0.5));
             float n2 = noise(p*3.2 - vec2(t*0.4,  t*0.6));
-            float f  = clamp((n1 + 0.6*n2), 0.0, 1.0); // combine + normalize to [0,1]
-
-            // Palette: black → deep blue → deep purple
+            float f  = clamp((n1 + 0.6*n2), 0.0, 1.0);
             vec3 black  = vec3(0.0, 0.0, 0.0);
             vec3 blue   = vec3(0.1, 0.1, 0.3);
-            vec3 purple = vec3(0.01, 0.02, 0.01); // intentionally very dark purple
-
-            // Piecewise lerp: first half blends black→blue, second half blends blue→purple
+            vec3 purple = vec3(0.01, 0.02, 0.01);
             vec3 col;
             if(f < 0.5){
               col = mix(black, blue, smoothstep(0.0, 0.5, f));
             } else {
               col = mix(blue,  purple, smoothstep(0.5, 1.0, f));
             }
-
-            // Vignette to center focus and hide edge artifacts
             float vign = smoothstep(0.96, 0.15, length(uv-0.5));
             col *= vign;
-
-            gl_FragColor = vec4(col, 1.0); // opaque output (alpha disabled in renderer)
+            gl_FragColor = vec4(col, 1.0);
           }
         `;
-
-        // Shader uniforms: time & resolution (pixels)
         uniforms = { uTime: { value: 0 }, uResolution: { value: new THREE.Vector2() } };
-
-        // Fullscreen quad: PlaneGeometry(2,2) already covers NDC [-1,1]
         const geo = new THREE.PlaneGeometry(2,2);
         const mat = new THREE.ShaderMaterial({
           uniforms,
           vertexShader: vertex,
           fragmentShader: fragment,
-          depthTest:false,  // draw without depth testing
-          depthWrite:false, // don't write to depth buffer
-          transparent:false // opaque for best color stability
+          depthTest:false,
+          depthWrite:false,
+          transparent:false
         });
         mesh = new THREE.Mesh(geo, mat);
         scene.add(mesh);
-
-        onResize();                        // set initial sizes
-        window.addEventListener('resize', onResize); // keep responsive
-        animate();                         // begin render loop
+        onResize();
+        window.addEventListener('resize', onResize);
+        animate();
       }
-
-      // Keep renderer size and uResolution in sync with the viewport
       function onResize(){
         const w = innerWidth, h = innerHeight;
         renderer.setSize(w, h, false);
         uniforms.uResolution.value.set(w, h);
       }
-
-      // RAF loop: advance time, render scene
       function animate(t){
-        uniforms.uTime.value = (t||0)*0.001; // ms → seconds
+        uniforms.uTime.value = (t||0)*0.001;
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
-
-      // Init with a graceful fallback if WebGL fails
       try{ init(); }
       catch(e){
         canvas.style.display='none';
         console.warn('WebGL disabled:', e);
       }
-
-      /* ==========================
-         INTERACTIONS
-         ========================== */
-      // Simple content toggle for the About button
       function showAbout(e){
         e.preventDefault();
         const mainText = document.getElementById('main-text');
